@@ -16,6 +16,7 @@ class Posts {
         user: {
           id: "001",
           name: "Alice",
+          pp: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzGDEhwUKopx2_djdmsLjEYQjxKRLr8DSdnw&s",
           ban: false,
         },
         like: {
@@ -32,6 +33,7 @@ class Posts {
         user: {
           id: "002",
           name: "Linda",
+          pp: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzGDEhwUKopx2_djdmsLjEYQjxKRLr8DSdnw&s",
           ban: false,
         },
         replyTo: "p001",
@@ -47,6 +49,7 @@ class Posts {
         user: {
           id: "003",
           name: "Doma",
+          pp: "https://i.pinimg.com/originals/5a/67/17/5a67178334c65113bc9b1cdf8122d6fa.jpg",
           ban: false,
         },
         replyTo: "",
@@ -62,6 +65,7 @@ class Posts {
         user: {
           id: "004",
           name: "Fathin",
+          pp: "https://i.pinimg.com/736x/2c/d0/16/2cd0166a3b2f3ae98caf92daaa075e05.jpg",
           ban: false,
         },
         replyTo: "",
@@ -73,6 +77,7 @@ class Posts {
         repost: {
           id: "001",
           name: "Alice",
+          pp: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzGDEhwUKopx2_djdmsLjEYQjxKRLr8DSdnw&s",
           ban: false,
         },
         ogId: "p001",
@@ -84,6 +89,7 @@ class Posts {
         user: {
           id: "005",
           name: "Gorengan Hunter",
+          pp: "https://w7.pngwing.com/pngs/57/812/png-transparent-fried-food.png",
           ban: false,
         },
         replyTo: "",
@@ -98,6 +104,7 @@ class Posts {
           user: {
             id: "001",
             name: "Alice",
+            pp: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzGDEhwUKopx2_djdmsLjEYQjxKRLr8DSdnw&s",
             ban: false,
           },
           like: {
@@ -116,6 +123,7 @@ class Posts {
       user: {
         id: "System",
         name: "System",
+        pp: "",
         ban: false,
       },
       replyTo: "",

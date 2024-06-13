@@ -1,4 +1,5 @@
 <%- include("partials/header.ejs") %>
+<img class="pfp" src="<%= post.user.pp %>" />
 <h3>
   <%= post.user.name %> <%= post.reQuote ? `is Requote to
   ${post.reQuote.user.name}`: "" %>
@@ -8,6 +9,7 @@
 <% if(post.img) %> <img src="<%= post.img %>" />
 <% if(post.reQuote) { %>
 <a href="/?id=<%= post.reQuote.id %>">
+  <img class="pfp" src="<%= post.reQuote.user.pp %>" />
   <h4><%= post.reQuote.user.name %></h4>
   <h4><%= post.reQuote.time %></h4>
   <h3><%= post.reQuote.title %></h3>
@@ -21,6 +23,6 @@
   <h2><%= reply.title %></h2>
   <h3><%= reply.time %></h3>
   <button>Like: <%= reply.like.total %></button>
-  <% if(reply.img) %> <img src="<%= reply.img %>" />
+  <% if(reply.img) %> <img class="pfp" src="<%= reply.img %>" />
 </a>
 <% }); %> <% if(post.img) %> <%- include("partials/footer.ejs") %>
