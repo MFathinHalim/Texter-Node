@@ -1,6 +1,8 @@
 declare type userType = {
   id: string;
   name: string;
+  username: string;
+  password: string;
   pp: string;
   ban: boolean;
   bookmark?: postType[];
