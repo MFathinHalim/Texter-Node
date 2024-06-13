@@ -1,0 +1,26 @@
+<%- include("partials/header.ejs") %>
+<h3>
+  <%= post.user.name %> <%= post.reQuote ? `is Requote to
+  ${post.reQuote.user.name}`: "" %>
+</h3>
+<h3><%= post.time %></h3>
+<h2><%= post.title %></h2>
+<% if(post.img) %> <img src="<%= post.img %>" />
+<% if(post.reQuote) { %>
+<a href="/?id=<%= post.reQuote.id %>">
+  <h4><%= post.reQuote.user.name %></h4>
+  <h4><%= post.reQuote.time %></h4>
+  <h3><%= post.reQuote.title %></h3>
+  <% if(post.reQuote.img) %> <img src="<%= post.reQuote.img %>" />
+</a>
+<% } %>
+<button>Like: <%= post.like.total %></button>
+<% replies.forEach((reply) => { %>
+<a href="/?id=<%=reply.id %>">
+  <h3><%= reply.user.name %></h3>
+  <h2><%= reply.title %></h2>
+  <h3><%= reply.time %></h3>
+  <button>Like: <%= reply.like.total %></button>
+  <% if(reply.img) %> <img src="<%= reply.img %>" />
+</a>
+<% }); %> <% if(post.img) %> <%- include("partials/footer.ejs") %>

@@ -1,0 +1,27 @@
+<%- include("partials/header.ejs") %> <% posts.forEach((post) => { %>
+<div>
+  <a href="/?id=<%= post.repost ? post.ogId : post.id %>">
+    <% if(post.repost) { %>
+    <h4><%= post.user.name %> was reposted</h4>
+    <h3><%= post.repost.name %></h3>
+    <% } else { %>
+    <h3>
+      <%= post.user.name %> <%= post.reQuote ? `is Requote to
+      ${post.reQuote.user.name}`: "" %>
+    </h3>
+    <% } %>
+    <h3><%= post.time %></h3>
+    <h2><%= post.title %></h2>
+    <% if(post.img) %> <img src="<%= post.img %>" />
+  </a>
+  <% if(post.reQuote) { %>
+  <a href="/?id=<%= post.reQuote.id %>">
+    <h4><%= post.reQuote.user.name %></h4>
+    <h4><%= post.reQuote.time %></h4>
+    <h3><%= post.reQuote.title %></h3>
+    <% if(post.reQuote.img) %> <img src="<%= post.reQuote.img %>" />
+  </a>
+  <% } %>
+  <button>Like: <%= post.like.total %></button>
+</div>
+<% }); %> <%- include("partials/footer.ejs") %>

@@ -1,0 +1,5 @@
+{
+  "CLIENT_ID": "1230761858453995530",
+  "CLIENT_SECRET": "GWDo69hjz4QqATHez3qhwbJ7dYKgJmzV",
+  "REDIRECT_URI": "http://localhost:8080/login/redirect/"
+}
