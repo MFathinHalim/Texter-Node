@@ -53,5 +53,12 @@ class Posts {
       TODO kalau gak ada id bearti return semua postnya
     */
   }
+
+  posting(post: postType): postType {
+    if (post.user.ban || !post.title || post.title === "")
+      return this.#notFound;
+    this.#posts.push(post);
+    return post;
+  }
 }
 export default Posts; //TODO Di Export supaya dipake di files lain :D

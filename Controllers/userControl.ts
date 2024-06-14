@@ -33,21 +33,22 @@ class Users {
         pp: "",
         ban: false,
       },
-    ];
+    ]; //list kemungkinan error
   }
 
   static getInstances() {
-    if (!Users.instances) Users.instances = new Users();
+    if (!Users.instances) Users.instances = new Users(); //Untuk ngestart class
     return Users.instances;
   }
 
   signUp(name: string, username: string, password: string): userType {
+    //untuk signup
     const isNameTaken: boolean = this.#users.some(
       (user) =>
         user.name === name ||
         user.username === username ||
         user.name.length > 50
-    );
+    ); //cek namenya aman gak
     if (isNameTaken) return this.#error[0];
 
     const newUser: userType = {
@@ -60,20 +61,20 @@ class Users {
       bookmark: [],
     };
 
-    this.#users.push(newUser);
-    console.log(this.#users);
+    this.#users.push(newUser); //di push
 
-    return newUser;
+    return newUser; //di return
   }
 
   login(username: string, password: string): userType {
+    //Login
     const userIndex: number = this.#users.findIndex(
       (user) =>
         user.username === username &&
         user.password === password &&
         user.ban === false
-    );
-    return userIndex !== -1 ? this.#users[userIndex] : this.#error[1];
+    ); //? Cek nih uname, password, ban nya aman gak
+    return userIndex !== -1 ? this.#users[userIndex] : this.#error[1]; //return kalau ada bearti return usernya, kalau enggak ke error 1
   }
 }
 

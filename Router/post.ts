@@ -17,7 +17,8 @@ routerPosts
     ); //? kalau get, liat dulu ada id atau enggak. Kalau ada details, kalau enggak homepage
   })
   .post((req: Request, res: Response) => {
-    return "Woah di post coy"; //nanti :3
+    PostsClass.posting(req.body.post);
+    return res.redirect(`/?id=${req.body.post.id}`);
   });
 
 export default routerPosts; //TODO export routernya buat dipake di index.ts
