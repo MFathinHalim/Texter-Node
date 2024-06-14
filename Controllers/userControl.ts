@@ -68,7 +68,10 @@ class Users {
 
   login(username: string, password: string): userType {
     const userIndex: number = this.#users.findIndex(
-      (user) => user.username === username && user.password === password
+      (user) =>
+        user.username === username &&
+        user.password === password &&
+        user.ban === false
     );
     return userIndex !== -1 ? this.#users[userIndex] : this.#error[1];
   }

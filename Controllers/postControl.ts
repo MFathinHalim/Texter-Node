@@ -36,7 +36,9 @@ class Posts {
   }
 
   //Fungsi untuk mendapatkan data
-  getData(id?: string): postType[] | {} {
+  getData(
+    id?: string
+  ): { posts: postType[] } | { post: postType; replies?: postType[] } {
     return id !== undefined
       ? {
           post:

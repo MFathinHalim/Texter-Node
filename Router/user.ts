@@ -12,10 +12,18 @@ routerUsers
     return res.render("login");
   })
   .post((req: Request, res: Response) => {
-    return res.render(
-      "redirect",
-      userClass.login(req.body.username, req.body.password)
+    let result: userType = userClass.login(
+      req.body.username,
+      req.body.password
     );
+
+    if (result.username === "system") {
+      return res.render("error", {
+        type: "user",
+        error: result,
+      });
+    }
+    return res.render("redirect", result);
   });
 
 //? router signup
