@@ -60,5 +60,11 @@ class Posts {
     this.#posts.push(post);
     return post;
   }
+
+  liking(post: postType, user: userType): postType {
+    return this.#posts.find((entry: postType) => entry === post) 
+      ? (post.like.total++, post.like.users.push(user), post) 
+      : this.#notFound;
+  }
 }
 export default Posts; //TODO Di Export supaya dipake di files lain :D

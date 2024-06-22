@@ -3,7 +3,7 @@ declare type userType = {
   name: string;
   username: string;
   password: string;
-  pp: string;
+  pp?: string;
   ban: boolean;
   bookmark?: postType[];
 };
@@ -19,7 +19,7 @@ declare type postType = {
   };
   replyTo: string;
   img?: string;
-  repost?: userType;
+  repost?: userType | undefined;
   ogId?: string;
   reQuote?: postType;
 };

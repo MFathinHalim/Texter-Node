@@ -18,7 +18,15 @@ routerPosts
   })
   .post((req: Request, res: Response) => {
     PostsClass.posting(req.body.post);
+    console.log(PostsClass.getData())
     return res.redirect(`/?id=${req.body.post.id}`);
   });
+
+routerPosts.route("/like/:id")
+.get((req: Request, res: Response) => {
+  PostsClass.liking(req.body.post, req.body.user);
+  console.log(PostsClass.getData())
+  return res.redirect(`/?id=${req.params.id}`);
+})
 
 export default routerPosts; //TODO export routernya buat dipake di index.ts

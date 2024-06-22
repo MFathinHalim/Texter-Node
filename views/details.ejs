@@ -1,5 +1,4 @@
 <%- include("partials/header.ejs") %>
-<img class="pfp" src="<%= post.user.pp %>" />
 <h3>
   <%= post.user.name %> <%= post.reQuote ? `is Requote to
   ${post.reQuote.user.name}`: "" %>
@@ -16,13 +15,36 @@
   <% if(post.reQuote.img) %> <img src="<%= post.reQuote.img %>" />
 </a>
 <% } %>
-<button>Like: <%= post.like.total %></button>
+<button onclick="sendLikeRequest('<%- post %>')">Like: <%= post.like.total %></button>
+<button onclick="sendPostRequest(undefined, undefined, undefined, '<%= post.id %>', '<%- post %>')">Repost</button>
+<form onsubmit="sendPostRequest(this,'<%- post %>', '', undefined, undefined)">
+  <div>
+    <label for="title">Reply</label>
+      <input type="text" id="title" name="title">
+  </div>
+  <div>
+    <label for="img">Image URL:</label>
+    <input type="text" id="img" name="img">
+  </div>
+  <button type="submit">Post</button>
+</form>
+<form onsubmit="sendPostRequest(this, '', '<%- post %>', undefined, undefined)">
+  <div>
+    <label for="title">Requote</label>
+      <input type="text" id="title" name="title">
+  </div>
+  <div>
+    <label for="img">Image URL:</label>
+    <input type="text" id="img" name="img">
+  </div>
+  <button type="submit">Post</button>
+</form>
 <% replies.forEach((reply) => { %>
 <a href="/?id=<%=reply.id %>">
   <h3><%= reply.user.name %></h3>
   <h2><%= reply.title %></h2>
   <h3><%= reply.time %></h3>
-  <button>Like: <%= reply.like.total %></button>
+  <button onclick="sendLikeRequest(reply)">Like: <%= reply.like.total %></button>
   <% if(reply.img) %> <img class="pfp" src="<%= reply.img %>" />
 </a>
 <% }); %> <% if(post.img) %> <%- include("partials/footer.ejs") %>
