@@ -20,6 +20,10 @@ class Posts {
         password: "system",
         pp: "",
         ban: false,
+        accessToken: {
+          accessNow: "",
+          timeBefore: "",
+        },
       },
       replyTo: "",
       like: {
@@ -30,7 +34,7 @@ class Posts {
   }
 
   //Dapatin instancenya, alias cek udah ada atau belum :D
-  static getInstance(): Posts {
+  static getInstances(): Posts {
     if (!Posts.instance) Posts.instance = new Posts(); //? Bikin kelasnya
     return Posts.instance; //return instancenya (alias kelasnya)
   }

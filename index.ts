@@ -4,9 +4,7 @@ import dotenv from "dotenv";
 import path from "path";
 
 //import routernya
-import routerPosts from "./Router/post";
-import routerUsers from "./Router/user";
-
+import router from "./Router/main";
 //? dotenv config
 dotenv.config();
 
@@ -20,9 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //? Jalankan Routernya
-app.use("/", routerPosts); //* Router Posts
-app.use("/", routerUsers); //* Router Users
-
+app.use("/", router); //* Router Posts
 //Run app nya sesuai port
 app.listen(port, () => {
   console.log(`[app]: berjalan pada: http://localhost:${port}`); //TODO di Log biar jelas udah jalan atau kagak

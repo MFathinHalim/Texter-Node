@@ -14,6 +14,10 @@ class Users {
         pp: "https://cdn.glitch.global/55de0177-2d52-43bf-a066-45796ec8e7c9/fathin.jpeg?v=1713409662281",
         ban: false,
         bookmark: [],
+        accessToken: {
+          accessNow: "",
+          timeBefore: ""
+        }
       },
     ];
     this.#error = [
@@ -24,6 +28,10 @@ class Users {
         password: "system",
         pp: "",
         ban: false,
+        accessToken: {
+          accessNow: "",
+          timeBefore: ""
+        }
       },
       {
         id: "System",
@@ -32,6 +40,10 @@ class Users {
         password: "system",
         pp: "",
         ban: false,
+        accessToken: {
+          accessNow: "",
+          timeBefore: ""
+        }
       },
     ]; //list kemungkinan error
   }
@@ -59,6 +71,10 @@ class Users {
       pp: "https://cdn.glitch.global/55de0177-2d52-43bf-a066-45796ec8e7c9/fathin.jpeg?v=1713409662281",
       ban: false,
       bookmark: [],
+      accessToken: {
+        accessNow: "",
+        timeBefore: ""
+      }
     };
 
     this.#users.push(newUser); //di push
@@ -75,6 +91,30 @@ class Users {
         user.ban === false
     ); //? Cek nih uname, password, ban nya aman gak
     return userIndex !== -1 ? this.#users[userIndex] : this.#error[1]; //return kalau ada bearti return usernya, kalau enggak ke error 1
+  }
+  createAccessToken(username: string): string {
+    const user = this.#users.find(user => user.username === username);
+    if (!user) return "User not found";
+
+    const currentTime = new Date();
+    const timeBefore = new Date(user.accessToken.timeBefore);
+    const timeDifference = currentTime.getTime() - timeBefore.getTime();
+
+    if (timeDifference < 15 * 60 * 1000 && user.accessToken.accessNow !== "") {
+      return user.accessToken.accessNow;
+    } else {
+      const newToken = "txtrtkn" + Math.random().toString(16).slice(2) + "tme:" + currentTime.toString(); // Assuming you have a function to generate a new token
+      user.accessToken.accessNow = newToken;
+      user.accessToken.timeBefore = currentTime.toString();
+      return newToken;
+    }
+  }
+
+  checkAccessToken(username: string, accessToken: string): boolean {
+    const user = this.#users.find(user => user.username === username);
+    if (!user) return false; // User not found
+    if (user.accessToken.accessNow !== accessToken) return false; // Token doesn't match
+    return true; // True if token is still within 15 minutes
   }
 }
 

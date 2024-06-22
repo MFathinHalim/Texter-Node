@@ -6,6 +6,10 @@ declare type userType = {
   pp?: string;
   ban: boolean;
   bookmark?: postType[];
+  accessToken: {
+    accessNow: string;
+    timeBefore: string;
+  };
 };
 
 declare type postType = {
