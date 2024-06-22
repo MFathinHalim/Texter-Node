@@ -30,15 +30,17 @@
         <% if(post.img) %> <img src="<%= post.img %>" />
       </a>
       <% if(post.reQuote) { %>
-      <a href="/?id=<%= post.reQuote.id %>">
-        <img class="pfp" src="<%= post.reQuote.user.pp %>" />
-        <h4><%= post.reQuote.user.name %></h4>
-        <h4><%= post.reQuote.time %></h4>
-        <h3><%= post.reQuote.title %></h3>
-        <% if(post.reQuote.img) %> <img src="<%= post.reQuote.img %>" />
-      </a>
+      <div style="border: 1px solid black; width: fit-content; padding: 10px; min-width: 300px;">
+        <a href="/?id=<%= post.reQuote.id %>">
+          <img class="pfp" src="<%= post.reQuote.user.pp %>" />
+          <h4><%= post.reQuote.user.name %></h4>
+          <h4><%= post.reQuote.time %></h4>
+          <h3><%= post.reQuote.title %></h3>
+          <% if(post.reQuote.img) %> <img src="<%= post.reQuote.img %>" />
+        </a>
+      </div>
       <% } %>
-      <button onclick="sendLikeRequest('<%- post %>')">Like: <%= post.like.total %></button>
+      <button onclick="sendLikeRequest('<%= JSON.stringify(post) %>')">Like: <%= post.like.total %></button>
       <button onclick="sendPostRequest(undefined, undefined, undefined, '<%= post.id %>', '<%= JSON.stringify(post) %>')">Repost</button>
     </div>
 <% } }); %> <%- include("partials/footer.ejs") %>

@@ -62,9 +62,23 @@ class Posts {
   }
 
   liking(post: postType, user: userType): postType {
-    return this.#posts.find((entry: postType) => entry === post) 
-      ? (post.like.total++, post.like.users.push(user), post) 
-      : this.#notFound;
+    const foundPost:postType | undefined= this.#posts.find((entry: postType) => entry.id === post.id);
+    if (foundPost) {
+      const isUserAlreadyLike:userType | undefined = foundPost.like.users.find(
+        (entry: userType) => entry.id === user.id
+      );
+      if (isUserAlreadyLike) {
+        foundPost.like.total--;
+        foundPost.like.users = foundPost.like.users.filter((entry: userType) => entry.id !== user.id);
+      }
+      else {
+        foundPost.like.total++;
+        foundPost.like.users.push(user);
+      }
+      return foundPost;
+    } else {
+      return this.#notFound;
+    }
   }
 }
 export default Posts; //TODO Di Export supaya dipake di files lain :D

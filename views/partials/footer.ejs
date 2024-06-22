@@ -11,6 +11,7 @@
     // Send a fetch request to the server for posting
     function sendPostRequest(form, replyTo, reQuote, ogId, repostPost) {
         event.preventDefault(); // Prevent default form submission
+        if(repostPost === undefined && (form.value === undefined || form.value === "")) return;
         repostPost = repostPost !== undefined ? JSON.parse(repostPost) : undefined
         const time = new Date().toLocaleDateString();
         const repost = repostPost !== undefined ? repostPost.user : undefined;
@@ -27,7 +28,7 @@
             img: repostPost !== undefined ? repostPost.img : form.querySelector("#img").value,
             ogId: ogId,
             repost: repost,
-            reQuote: reQuote,
+            reQuote: reQuote !== undefined ? JSON.parse(reQuote) : undefined,
         }
         fetch('/', {
             method: 'POST',
@@ -41,8 +42,9 @@
 
     // Send a fetch request to the server for liking
     function sendLikeRequest(post) {
-        fetch(`/like/${post.id}`, {
-            method: 'GET',
+        post = JSON.parse(post)
+        fetch(`/like/`, {
+            method: 'POST',
             headers: {
             'Content-Type': 'application/json',
             },
@@ -51,6 +53,7 @@
             user: user
             }),
         });
+        window.location.reload();
     }
 
 </script>

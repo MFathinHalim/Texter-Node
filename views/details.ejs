@@ -7,17 +7,19 @@
 <h2><%= post.title %></h2>
 <% if(post.img) %> <img src="<%= post.img %>" />
 <% if(post.reQuote) { %>
-<a href="/?id=<%= post.reQuote.id %>">
-  <img class="pfp" src="<%= post.reQuote.user.pp %>" />
-  <h4><%= post.reQuote.user.name %></h4>
-  <h4><%= post.reQuote.time %></h4>
-  <h3><%= post.reQuote.title %></h3>
-  <% if(post.reQuote.img) %> <img src="<%= post.reQuote.img %>" />
-</a>
+<div style="border: 1px solid black; width: fit-content; padding: 10px; min-width: 300px;">
+  <a href="/?id=<%= post.reQuote.id %>">
+    <img class="pfp" src="<%= post.reQuote.user.pp %>" />
+    <h4><%= post.reQuote.user.name %></h4>
+    <h4><%= post.reQuote.time %></h4>
+    <h3><%= post.reQuote.title %></h3>
+    <% if(post.reQuote.img) %> <img src="<%= post.reQuote.img %>" />
+  </a>
+</div>
 <% } %>
-<button onclick="sendLikeRequest('<%- post %>')">Like: <%= post.like.total %></button>
-<button onclick="sendPostRequest(undefined, undefined, undefined, '<%= post.id %>', '<%- post %>')">Repost</button>
-<form onsubmit="sendPostRequest(this, '<%= JSON.stringify(post) %>', '', undefined, undefined)">
+<button onclick="sendLikeRequest('<%= JSON.stringify(post) %>')">Like: <%= post.like.total %></button>
+<button onclick="sendPostRequest(undefined, undefined, undefined, '<%= post.id %>', '<%= JSON.stringify(post) %>')">Repost</button>
+<form onsubmit="sendPostRequest(this, '<%= JSON.stringify(post) %>', undefined, undefined, undefined)">
   <div>
     <label for="title">Reply</label>
       <input type="text" id="title" name="title">
@@ -28,7 +30,7 @@
   </div>
   <button type="submit">Post</button>
 </form>
-<form onsubmit="sendPostRequest(this, '', '<%- post %>', undefined, undefined)">
+<form onsubmit="sendPostRequest(this, undefined, '<%= JSON.stringify(post) %>', undefined, undefined)">
   <div>
     <label for="title">Requote</label>
       <input type="text" id="title" name="title">
