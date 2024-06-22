@@ -11,21 +11,20 @@ routerPosts
   .get((req: Request, res: Response) => {
     return res.render(
       req.query.id === undefined ? "homepage" : "details",
-      req.query.id !== undefined
-        ? PostsClass.getData(req.query.id?.toString())
-        : PostsClass.getData()
+      req.query.id === undefined
+        ? PostsClass.getData()
+        : PostsClass.getData(req.query.id?.toString())
     ); //? kalau get, liat dulu ada id atau enggak. Kalau ada details, kalau enggak homepage
   })
   .post((req: Request, res: Response) => {
-    PostsClass.posting(req.body.post);
+    PostsClass.posting(req.body);
     console.log(PostsClass.getData())
-    return res.redirect(`/?id=${req.body.post.id}`);
+    return res.redirect(`/?id=${req.body.id}`);
   });
 
 routerPosts.route("/like/:id")
 .get((req: Request, res: Response) => {
   PostsClass.liking(req.body.post, req.body.user);
-  console.log(PostsClass.getData())
   return res.redirect(`/?id=${req.params.id}`);
 })
 

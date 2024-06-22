@@ -1,5 +1,5 @@
-<%- include("partials/header.ejs") %> <% posts.forEach((post) => { %>
-<form onsubmit="sendPostRequest(this, '', undefined, undefined, undefined)">
+<%- include("partials/header.ejs") %>
+<form enctype="text" onsubmit="sendPostRequest(this, undefined, undefined, undefined, undefined)">
   <div>
     <label for="title">Title:</label>
       <input type="text" id="title" name="title">
@@ -10,33 +10,35 @@
   </div>
   <button type="submit">Post</button>
 </form>
-<div>
-  <a href="/?id=<%= post.repost ? post.ogId : post.id %>">
-    <% if(post.repost) { %>
-    <h4><%= post.user.name %> was reposted</h4>
-    <img class="pfp" src="<%= post.repost.pp %>" />
-    <h3><%= post.repost.name %></h3>
-    <% } else { %>
-    <img class="pfp" src="<%= post.user.pp %>" />
-    <h3>
-      <%= post.user.name %> <%= post.reQuote ? `is Requote to
-      ${post.reQuote.user.name}`: "" %>
-    </h3>
-    <% } %>
-    <h3><%= post.time %></h3>
-    <h2><%= post.title %></h2>
-    <% if(post.img) %> <img src="<%= post.img %>" />
-  </a>
-  <% if(post.reQuote) { %>
-  <a href="/?id=<%= post.reQuote.id %>">
-    <img class="pfp" src="<%= post.reQuote.user.pp %>" />
-    <h4><%= post.reQuote.user.name %></h4>
-    <h4><%= post.reQuote.time %></h4>
-    <h3><%= post.reQuote.title %></h3>
-    <% if(post.reQuote.img) %> <img src="<%= post.reQuote.img %>" />
-  </a>
-  <% } %>
-  <button onclick="sendLikeRequest('<%- post %>')">Like: <%= post.like.total %></button>
-  <button onclick="sendPostRequest(undefined, undefined, undefined, '<%= post.id %>', '<%- post %>')">Repost</button>
-</div>
-<% }); %> <%- include("partials/footer.ejs") %>
+<% posts.forEach((post) => { %>
+  <% if(!post.replyTo) { %>
+    <div>
+      <a href="/?id=<%= post.repost ? post.ogId : post.id %>">
+        <% if(post.repost) { %>
+        <h4><%= post.user.name %> was reposted</h4>
+        <img class="pfp" src="<%= post.repost.pp %>" />
+        <h3><%= post.repost.name %></h3>
+        <% } else { %>
+        <img class="pfp" src="<%= post.user.pp %>" />
+        <h3>
+          <%= post.user.name %> <%= post.reQuote ? `is Requote to
+          ${post.reQuote.user.name}`: "" %>
+        </h3>
+        <% } %>
+        <h3><%= post.time %></h3>
+        <h2><%= post.title %></h2>
+        <% if(post.img) %> <img src="<%= post.img %>" />
+      </a>
+      <% if(post.reQuote) { %>
+      <a href="/?id=<%= post.reQuote.id %>">
+        <img class="pfp" src="<%= post.reQuote.user.pp %>" />
+        <h4><%= post.reQuote.user.name %></h4>
+        <h4><%= post.reQuote.time %></h4>
+        <h3><%= post.reQuote.title %></h3>
+        <% if(post.reQuote.img) %> <img src="<%= post.reQuote.img %>" />
+      </a>
+      <% } %>
+      <button onclick="sendLikeRequest('<%- post %>')">Like: <%= post.like.total %></button>
+      <button onclick="sendPostRequest(undefined, undefined, undefined, '<%= post.id %>', '<%= JSON.stringify(post) %>')">Repost</button>
+    </div>
+<% } }); %> <%- include("partials/footer.ejs") %>

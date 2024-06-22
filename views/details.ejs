@@ -17,7 +17,7 @@
 <% } %>
 <button onclick="sendLikeRequest('<%- post %>')">Like: <%= post.like.total %></button>
 <button onclick="sendPostRequest(undefined, undefined, undefined, '<%= post.id %>', '<%- post %>')">Repost</button>
-<form onsubmit="sendPostRequest(this,'<%- post %>', '', undefined, undefined)">
+<form onsubmit="sendPostRequest(this, '<%= JSON.stringify(post) %>', '', undefined, undefined)">
   <div>
     <label for="title">Reply</label>
       <input type="text" id="title" name="title">
