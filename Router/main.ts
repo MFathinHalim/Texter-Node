@@ -3,6 +3,9 @@ import type { Request, Response, Router as RouterTypes } from "express";
 
 import Posts from "../Controllers/postControl";
 import Users from "../Controllers/userControl";
+import * as dotenv from "dotenv"
+
+dotenv.config();
 
 const userClass: Users = Users.getInstances(); //Cek classnya
 const PostsClass: Posts = Posts.getInstances(); //Cek classnya
@@ -19,18 +22,18 @@ router
     ); //? kalau get, liat dulu ada id atau enggak. Kalau ada details, kalau enggak homepage
   })
   .post((req: Request, res: Response) => {
-    const checkToken: boolean = userClass.checkAccessToken(req.body.user.username, req.body.user.accessToken)
-    if(checkToken) PostsClass.posting(req.body);
+    const checkToken: boolean = userClass.checkAccessToken(req.body.data.user.username, req.body.token)
+    if(checkToken) PostsClass.posting(req.body.data);
     return res.redirect(`/?id=${req.body.id}`);
   });
 
-router.route("/madeToken").get((req: Request, res: Response) => {
-  return res.json({ token: userClass.createAccessToken(req.query.username?.toString() || "") })
+router.route("/madeToken").post((req: Request, res: Response) => {
+  return req.body.id === null ? res.json({token: ""} ): res.json({ token: userClass.createAccessToken(req.body.id.toString()) })
 })
   
 router.route("/like/")
 .post((req: Request, res: Response) => {
-  const checkToken: boolean = userClass.checkAccessToken(req.body.user.username, req.body.user.accessToken)
+  const checkToken: boolean = userClass.checkAccessToken(req.body.user.username, req.body.token)
   if(checkToken) PostsClass.liking(req.body.post, req.body.user);
   return res.redirect(`/?id=${req.body.post.id}`);
 })
@@ -42,7 +45,7 @@ router
     return res.render("login");
   }) //untuk get login, ya di render aja
   .post((req: Request, res: Response) => {
-    let result: userType = userClass.login(
+    let result: any = userClass.login(
       req.body.username,
       req.body.password
     ); //liat hasil resultnya nih

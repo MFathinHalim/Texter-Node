@@ -59,7 +59,7 @@ class Posts {
   }
 
   posting(post: postType): postType {
-    if (post.user.ban || !post.title || post.title === "")
+    if (!post.title || post.title === "")
       return this.#notFound;
     this.#posts.push(post);
     return post;
@@ -69,7 +69,7 @@ class Posts {
     const foundPost:postType | undefined= this.#posts.find((entry: postType) => entry.id === post.id);
     if (foundPost) {
       const isUserAlreadyLike:userType | undefined = foundPost.like.users.find(
-        (entry: userType) => entry.id === user.id
+        (entry: userType) => entry.username === user.username
       );
       if (isUserAlreadyLike) {
         foundPost.like.total--;

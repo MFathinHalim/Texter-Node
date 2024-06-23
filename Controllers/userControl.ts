@@ -1,3 +1,8 @@
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+const bcrypt = require("bcryptjs")
+
+dotenv.config();
 class Users {
   static instances: Users;
 
@@ -10,7 +15,7 @@ class Users {
         id: "001",
         name: "Coder Hero",
         username: "coderhero",
-        password: "Fath1nhal1m",
+        password: "$2a$10$vA0MtwkumHsiRPjRdr7pM.ZTZRTK6bEN8vyDkaLOINdpHn6CnFkgW",
         pp: "https://cdn.glitch.global/55de0177-2d52-43bf-a066-45796ec8e7c9/fathin.jpeg?v=1713409662281",
         ban: false,
         bookmark: [],
@@ -53,7 +58,8 @@ class Users {
     return Users.instances;
   }
 
-  signUp(name: string, username: string, password: string): userType {
+  async signUp(name: string, username: string, password: string): Promise<userType> {
+    password = await bcrypt.hash(btoa(password), 10)
     //untuk signup
     const isNameTaken: boolean = this.#users.some(
       (user) =>
@@ -82,38 +88,51 @@ class Users {
     return newUser; //di return
   }
 
-  login(username: string, password: string): userType {
+  login(username: string, password: string): {} {
     //Login
     const userIndex: number = this.#users.findIndex(
-      (user) =>
+      async (user) =>
         user.username === username &&
-        user.password === password &&
+        await bcrypt.compare(btoa(password), user.password) &&
         user.ban === false
     ); //? Cek nih uname, password, ban nya aman gak
-    return userIndex !== -1 ? this.#users[userIndex] : this.#error[1]; //return kalau ada bearti return usernya, kalau enggak ke error 1
+    console.log(userIndex)
+    return userIndex !== -1 ? { 
+      username: this.#users[userIndex].username, 
+      name: this.#users[userIndex].name, 
+      id: this.#users[userIndex].id 
+    } : this.#error[1]; //return kalau ada bearti return usernya, kalau enggak ke error 1
   }
-  createAccessToken(username: string): string {
-    const user = this.#users.find(user => user.username === username);
-    if (!user) return "User not found";
+  createAccessToken(id: string): string {
+    const user = this.#users.find(user => user.id === id);
+    if (!user) return "";
+
+    const accessToken = user.accessToken || {
+      accessNow: "",
+      timeBefore: ""
+    };
 
     const currentTime = new Date();
-    const timeBefore = new Date(user.accessToken.timeBefore);
+    const timeBefore = new Date(accessToken.timeBefore);
     const timeDifference = currentTime.getTime() - timeBefore.getTime();
 
-    if (timeDifference < 15 * 60 * 1000 && user.accessToken.accessNow !== "") {
-      return user.accessToken.accessNow;
+    if (timeDifference < 15 * 60 * 1000 && accessToken.accessNow !== "") {
+      return accessToken.accessNow;
     } else {
-      const newToken = "txtrtkn" + Math.random().toString(16).slice(2) + "tme:" + currentTime.toString(); // Assuming you have a function to generate a new token
-      user.accessToken.accessNow = newToken;
-      user.accessToken.timeBefore = currentTime.toString();
+      const newToken:string = jwt.sign(user,  process.env.JWT_SECRET_KEY || "");
+      accessToken.accessNow = newToken;
+      accessToken.timeBefore = currentTime.toISOString();  
       return newToken;
     }
   }
 
-  checkAccessToken(username: string, accessToken: string): boolean {
+  checkAccessToken(username: string, token: string): boolean {
     const user = this.#users.find(user => user.username === username);
-    if (!user) return false; // User not found
-    if (user.accessToken.accessNow !== accessToken) return false; // Token doesn't match
+    let jwtSecretKey: string = process.env.JWT_SECRET_KEY || "";
+
+    const verified = jwt.verify(token, jwtSecretKey);
+    if (!verified) return false; // User not found
+    if (user?.accessToken?.accessNow !== token) return false; // Token doesn't match
     return true; // True if token is still within 15 minutes
   }
 }

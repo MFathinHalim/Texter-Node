@@ -2,11 +2,11 @@ declare type userType = {
   id: string;
   name: string;
   username: string;
-  password: string;
+  password?: string;
   pp?: string;
-  ban: boolean;
+  ban?: boolean;
   bookmark?: postType[];
-  accessToken: {
+  accessToken?: {
     accessNow: string;
     timeBefore: string;
   };
