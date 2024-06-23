@@ -52,8 +52,9 @@
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({data: data, token: token}),
-        });
-        return repostPost === undefined ? window.location.href = `/?id=${data.id}` : window.location.href = `/?id=${data.ogId}`;
+        }).then(() => {
+            return repostPost === undefined ? window.location.href = `/?id=${data.id}` : window.location.href = `/?id=${data.ogId}`;
+        }) ;
     }
 
     function sendLikeRequest(post, button) {
@@ -75,7 +76,7 @@
         })
         .then(res => res.json()) // Parse the JSON response
         .then(data => { 
-            button.innerText = "Likes: " + data.likes; // Update the button text with the new like count
+            button.innerText = "Like: " + data.likes; // Update the button text with the new like count
         })
         .catch(error => {
             console.error("Error sending like request:", error); 
