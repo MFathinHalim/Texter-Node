@@ -10,6 +10,8 @@ declare type userType = {
     accessNow: string;
     timeBefore: string;
   };
+  followers?: userType[];
+  following?: userType[]
 };
 
 declare type postType = {

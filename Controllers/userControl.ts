@@ -2,8 +2,10 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const bcrypt = require("bcryptjs")
 
-import type { Model, Document } from "mongoose";
+import type { Model  } from "mongoose";
 import { userModel } from "../models/user";
+
+import type { Document } from "mongoose";
 
 dotenv.config();
 class Users {
@@ -111,6 +113,47 @@ class Users {
     const verified = jwt.verify(token, jwtSecretKey);
     if (!verified) return false; // User not found
     return true; // True if token is still within 15 minutes
+  }
+
+  async follow(username: string, myusername: string) {
+    const user: Document<userType, any, any> & userType | null = await this.#users.findOne({ username: username });
+    const mine: Document<userType, any, any> & userType | null = await this.#users.findOne({ username: myusername });
+
+    if (user && mine && user.followers && mine.following) {
+      const isFollowing = mine.following.some(f => f.username === user.username);
+      if (isFollowing) {
+        // Unfollow: Remove user from mine's following and mine from user's followers
+        mine.following = mine.following.filter(f => f.username !== user.username);
+        user.followers = user.followers.filter(f => f.username !== mine.username);
+      } else {
+        // Follow: Add user to mine's following and mine to user's followers
+        user.followers.push(mine);
+        mine.following.push(user);
+      }
+      await user.save();
+      await mine.save();
+      return 200
+    } else {
+      return this.#error[1];
+    }    
+  }
+
+  async checkUserDetails(username: string, myusername: string) {
+    let following:boolean = false;
+    const user: Document<userType, any, any> & userType | null = await this.#users.findOne({ username: username });
+    const mine: Document<userType, any, any> & userType | null = await this.#users.findOne({ username: myusername });
+    if (user && mine && user.followers && mine.following) {
+      const isFollowing = mine.following.some(f => f.username === user.username);
+      if(isFollowing) following = true;
+      return {
+        user: user,
+        following: following
+      }
+    }
+    return {
+      user: this.#error[1],
+      following: following
+    }
   }
 }
 
