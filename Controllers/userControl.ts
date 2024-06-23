@@ -53,10 +53,7 @@ class Users {
     password = await bcrypt.hash(btoa(password), 10)
     //untuk signup
     const isNameTaken = await this.#users.findOne({
-      $or: [
-          { username: username },
-          { name: { $exists: true, $ne: '', $gt: 50 } }
-      ]
+      $or: [{ username: username }]
     });
     if (isNameTaken) return this.#error[0];
 
@@ -153,6 +150,15 @@ class Users {
     return {
       user: this.#error[1],
       following: following
+    }
+  }
+
+  async checkIsUserBan(username: string): Promise<boolean> {
+    const user: Document<userType, any, any> & userType | null = await this.#users.findOne({ username: username });
+    if(user && user.ban !== true) {
+      return false;
+    } else {
+      return true;
     }
   }
 }

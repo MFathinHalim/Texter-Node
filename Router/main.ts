@@ -43,7 +43,7 @@ router.route("/madeToken").post(async (req: Request, res: Response) => {
   return req.body.id === null ? res.json({token: ""} ): res.json({ token: await userClass.createAccessToken(req.body.id.toString()) })
 })
   
-router.route("/user/:username").get(async (req: Request, res: Response) => {
+router.route("/user/details/:username").get(async (req: Request, res: Response) => {
   const user = await userClass.checkUserDetails(req.params.username, (req.query.myname?.toString() ||""));
   console.log(user)
   return res.render("user", user);
@@ -53,6 +53,13 @@ router.route("/user/follow/:username").post(async (req: Request, res: Response) 
   const checkToken: boolean = await userClass.checkAccessToken(req.body.token)
   if(checkToken) await userClass.follow(req.params.username, (req.query.myname?.toString() || ""));
   res.send(200);
+})
+
+router.route("/user/check").get(async (req: Request, res: Response) => {
+  const checkUser: boolean = await userClass.checkIsUserBan(req.query.username?.toString() || "")
+  return res.json({
+    check: checkUser
+  })
 })
 
 //? router login
