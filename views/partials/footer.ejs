@@ -56,8 +56,7 @@
         return repostPost === undefined ? window.location.href = `/?id=${data.id}` : window.location.href = `/?id=${data.ogId}`;
     }
 
-    // Send a fetch request to the server for liking
-    function sendLikeRequest(post) {
+    function sendLikeRequest(post, button) {
         post = JSON.parse(post)
         fetch(`/like/`, {
             method: 'POST',
@@ -65,16 +64,23 @@
             'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              post: post,
-              user: {
+            post: post,
+            user: {
                 id: id,
                 username: username,
                 name: name
-              },
-              token: token
+            },
+            token: token
             }),
+        })
+        .then(res => res.json()) // Parse the JSON response
+        .then(data => { 
+            button.innerText = "Likes: " + data.likes; // Update the button text with the new like count
+        })
+        .catch(error => {
+            console.error("Error sending like request:", error); 
+            // Handle errors, e.g., display an error message to the user
         });
-        window.location.reload();
     }
 
 </script>

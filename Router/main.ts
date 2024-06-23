@@ -34,8 +34,13 @@ router.route("/madeToken").post(async (req: Request, res: Response) => {
 router.route("/like/")
 .post(async (req: Request, res: Response) => {
   const checkToken: boolean = await userClass.checkAccessToken(req.body.token)
-  if(checkToken) await PostsClass.liking(req.body.post, req.body.user);
-  return res.redirect(`/?id=${req.body.post.id}`);
+  let likes:number | postType = 0;
+  if(checkToken) {
+    likes = await PostsClass.liking(req.body.post.id, req.body.user);
+  }
+  return res.json({
+    likes:likes
+  });
 })
 
 //? router login

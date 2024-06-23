@@ -72,28 +72,29 @@ class Posts {
     return post;
   }
 
-  async liking(postId: string, user: userType): Promise<postType> {
+  async liking(postId: string, user: userType): Promise<postType | number> {
     try {
-      const post: Document<postType, any, any> & postType | null = await this.#posts.findOne({ id: postId });
-
-      if (post) {
+      const post: Document<postType, any, any> & postType | null = await this.#posts.findOne({ id: postId });      if (post) {
         const userAlreadyLike: userType | undefined = post.like.users.find(
           (entry: userType) => entry.username === user.username
         );
-  
-        if (userAlreadyLike) {
+        if (!userAlreadyLike) {
           // User belum like, tambahkan like
           post.like.total++;
           post.like.users.push(user);
         } else {
           // User sudah like, hapus like
           post.like.total--;
-          post.like.users.filter((entry: userType) => entry.id !== user.id);
+          const index = post.like.users.findIndex((entry: userType) => entry.username === user.username);
+          // Remove the user if found
+          if (index > -1) {
+            post.like.users.splice(index, 1); 
+          }        
         }
         // Simpan perubahan ke database
         await post.save();
   
-        return post;
+        return post.like.total;
       } else {
         return this.#notFound;
       }

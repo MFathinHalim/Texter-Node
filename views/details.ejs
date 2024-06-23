@@ -17,7 +17,7 @@
   </a>
 </div>
 <% } %>
-<button onclick="sendLikeRequest('<%= JSON.stringify(post) %>')">Like: <%= post.like.total %></button>
+<button onclick="sendLikeRequest('<%= JSON.stringify(post) %>', this)">Like: <%= post.like.total %></button>
 <button onclick="sendPostRequest(undefined, undefined, undefined, '<%= post.id %>', '<%= JSON.stringify(post) %>')">Repost</button>
 <form onsubmit="sendPostRequest(this, '<%= JSON.stringify(post) %>', undefined, undefined, undefined)">
   <div>
@@ -46,7 +46,7 @@
   <h3><%= reply.user.name %></h3>
   <h2><%= reply.title %></h2>
   <h3><%= reply.time %></h3>
-  <button onclick="sendLikeRequest(reply)">Like: <%= reply.like.total %></button>
+  <button onclick="sendLikeRequest(reply, this)">Like: <%= reply.like.total %></button>
   <% if(reply.img) %> <img class="pfp" src="<%= reply.img %>" />
 </a>
 <% }); %> <% if(post.img) %> <%- include("partials/footer.ejs") %>

@@ -40,7 +40,7 @@
         </a>
       </div>
       <% } %>
-      <button onclick="sendLikeRequest('<%= JSON.stringify(post) %>')">Like: <%= post.like.total %></button>
+      <button onclick="sendLikeRequest('<%= JSON.stringify(post) %>', this)">Like: <%= post.like.total %></button>
       <button onclick="sendPostRequest(undefined, undefined, undefined, '<%= post.id %>', '<%= JSON.stringify(post) %>')">Repost</button>
     </div>
 <% } }); %> 
