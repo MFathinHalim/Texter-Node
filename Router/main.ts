@@ -13,28 +13,28 @@ const router: RouterTypes = Router(); //Bikin Router Baru
 
 router
   .route("/") //Route /
-  .get((req: Request, res: Response) => {
+  .get(async (req: Request, res: Response) => {
     return res.render(
       req.query.id === undefined ? "homepage" : "details",
       req.query.id === undefined
-        ? PostsClass.getData()
-        : PostsClass.getData(req.query.id?.toString())
+        ? await PostsClass.getData()
+        : await PostsClass.getData(req.query.id?.toString())
     ); //? kalau get, liat dulu ada id atau enggak. Kalau ada details, kalau enggak homepage
   })
-  .post((req: Request, res: Response) => {
-    const checkToken: boolean = userClass.checkAccessToken(req.body.data.user.username, req.body.token)
-    if(checkToken) PostsClass.posting(req.body.data);
+  .post(async (req: Request, res: Response) => {
+    const checkToken: boolean = await userClass.checkAccessToken(req.body.token)
+    if(checkToken) await PostsClass.posting(req.body.data);
     return res.redirect(`/?id=${req.body.id}`);
   });
 
-router.route("/madeToken").post((req: Request, res: Response) => {
-  return req.body.id === null ? res.json({token: ""} ): res.json({ token: userClass.createAccessToken(req.body.id.toString()) })
+router.route("/madeToken").post(async (req: Request, res: Response) => {
+  return req.body.id === null ? res.json({token: ""} ): res.json({ token: await userClass.createAccessToken(req.body.id.toString()) })
 })
   
 router.route("/like/")
-.post((req: Request, res: Response) => {
-  const checkToken: boolean = userClass.checkAccessToken(req.body.user.username, req.body.token)
-  if(checkToken) PostsClass.liking(req.body.post, req.body.user);
+.post(async (req: Request, res: Response) => {
+  const checkToken: boolean = await userClass.checkAccessToken(req.body.token)
+  if(checkToken) await PostsClass.liking(req.body.post, req.body.user);
   return res.redirect(`/?id=${req.body.post.id}`);
 })
 
@@ -44,8 +44,8 @@ router
   .get((req: Request, res: Response) => {
     return res.render("login");
   }) //untuk get login, ya di render aja
-  .post((req: Request, res: Response) => {
-    let result: any = userClass.login(
+  .post(async (req: Request, res: Response) => {
+    let result: any = await userClass.login(
       req.body.username,
       req.body.password
     ); //liat hasil resultnya nih
@@ -66,8 +66,8 @@ router
   .get((req: Request, res: Response) => {
     return res.render("signup"); //? ya render
   })
-  .post((req: Request, res: Response) => {
-    userClass.signUp(req.body.name, req.body.username, req.body.password); //di adain
+  .post(async (req: Request, res: Response) => {
+    await userClass.signUp(req.body.name, req.body.username, req.body.password); //di adain
     return res.redirect("/login"); //lalu ke /login
   });
 

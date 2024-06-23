@@ -1,14 +1,16 @@
+import { type Model, type Document, Types } from "mongoose";
+import mainModel from "../models/post";
 //? Kelas untuk postingan
 class Posts {
   static instance: Posts; //Instance
 
   //TODO Siapin variabel yang kita perlukan
-  #posts: postType[];
+  #posts: Model<postType>;
   #notFound: postType;
 
   //* Constructor, semacam __init__ di python :3
   constructor() {
-    this.#posts = []; //Postnya untuk kelas
+    this.#posts = mainModel; //Postnya untuk kelas
     this.#notFound = {
       id: "not-found",
       title: "data not found",
@@ -40,47 +42,63 @@ class Posts {
   }
 
   //Fungsi untuk mendapatkan data
-  getData(
+  async getData(
     id?: string
-  ): { posts: postType[] } | { post: postType; replies?: postType[] } {
-    return id !== undefined
-      ? {
-          post:
-            this.#posts.find((entry: postType) => entry.id === id) ||
-            this.#notFound, //Cek ada atau enggak, kalau enggak ada ya notFound
-          replies:
-            this.#posts.filter((entry: postType) => entry.replyTo === id) || [], //Cek ada replies gak
-        }
-      : { posts: this.#posts };
-    /*
-      ? Kalau ada id dia bakal dicari dalam posts (kalau gak ketemu jadi notFound), 
-      TODO kalau gak ada id bearti return semua postnya
-    */
+  ): Promise<{ posts: postType[] } | { post: postType | null; replies?: postType[] }> {
+    if (id !== undefined) {
+      try {
+        const post = await this.#posts.findOne({ id });
+        const replies = await this.#posts.find({ replyTo: id });
+        return { post: post || null, replies: replies || [] };
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        return { post: null, replies: [] };
+      }
+    } else {
+      try {
+        const posts:postType[] = await this.#posts.find();
+        return { posts:posts };
+      } catch (error) {
+        console.error("Error fetching all posts:", error);
+        return { posts: [] };
+      }
+    }
   }
 
-  posting(post: postType): postType {
+  async posting(post: postType): Promise<postType> {
     if (!post.title || post.title === "")
       return this.#notFound;
-    this.#posts.push(post);
+    await mainModel.create(post)
     return post;
   }
 
-  liking(post: postType, user: userType): postType {
-    const foundPost:postType | undefined= this.#posts.find((entry: postType) => entry.id === post.id);
-    if (foundPost) {
-      const isUserAlreadyLike:userType | undefined = foundPost.like.users.find(
-        (entry: userType) => entry.username === user.username
-      );
-      if (isUserAlreadyLike) {
-        foundPost.like.total--;
-        foundPost.like.users = foundPost.like.users.filter((entry: userType) => entry.id !== user.id);
+  async liking(postId: string, user: userType): Promise<postType> {
+    try {
+      const post: Document<postType, any, any> & postType | null = await this.#posts.findOne({ id: postId });
+
+      if (post) {
+        const userAlreadyLike: userType | undefined = post.like.users.find(
+          (entry: userType) => entry.username === user.username
+        );
+  
+        if (userAlreadyLike) {
+          // User belum like, tambahkan like
+          post.like.total++;
+          post.like.users.push(user);
+        } else {
+          // User sudah like, hapus like
+          post.like.total--;
+          post.like.users.filter((entry: userType) => entry.id !== user.id);
+        }
+        // Simpan perubahan ke database
+        await post.save();
+  
+        return post;
+      } else {
+        return this.#notFound;
       }
-      else {
-        foundPost.like.total++;
-        foundPost.like.users.push(user);
-      }
-      return foundPost;
-    } else {
+    } catch (error) {
+      console.error("Error in liking:", error);
       return this.#notFound;
     }
   }

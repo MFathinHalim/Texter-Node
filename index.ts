@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import mongoose from "mongoose";
 import express from "express";
 import dotenv from "dotenv";
 import path from "path";
@@ -20,6 +21,9 @@ app.use(express.urlencoded({ extended: false }));
 //? Jalankan Routernya
 app.use("/", router); //* Router Posts
 //Run app nya sesuai port
-app.listen(port, () => {
-  console.log(`[app]: berjalan pada: http://localhost:${port}`); //TODO di Log biar jelas udah jalan atau kagak
-});
+mongoose.set("strict", false);
+mongoose.connect(process.env.MONGODBURI || "").then(() => {
+  app.listen(port, () => {
+    console.log(`[app]: berjalan pada: http://localhost:${port}`); //TODO di Log biar jelas udah jalan atau kagak
+  });  
+})

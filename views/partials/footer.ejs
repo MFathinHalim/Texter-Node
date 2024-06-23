@@ -1,4 +1,81 @@
     
 </body>
+<script>
+    const username = localStorage.getItem("username");
+    const name = localStorage.getItem("name");
+    const id = localStorage.getItem("id");
+    const refresh = localStorage.getItem("refreshToken");
 
+    if(!username && window.location.href !== "/login" && window.location.href !== "/signup") {
+        window.location.href = "/login"
+    }
+    fetch('/madeToken', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id: id,
+            username: username,
+            refreshToken: refresh
+        }),
+    }).then(res => res.json()).then(data => {
+        sessionStorage.setItem('token', data.token); 
+    });
+
+    const token = sessionStorage.getItem('token');
+    console.log(token)
+    // Send a fetch request to the server for posting
+    function sendPostRequest(form, replyTo, reQuote, ogId, repostPost) {
+        event.preventDefault(); // Prevent default form submission
+        repostPost = repostPost !== undefined ? JSON.parse(repostPost) : undefined
+        const time = new Date().toLocaleDateString();
+        const repost = repostPost !== undefined ? repostPost.user : undefined;
+        const data = {
+            id: "txtr" + Math.random().toString(16).slice(2) + "tme:" + time,
+            title: repostPost !== undefined ? repostPost.title : form.querySelector("#title").value, 
+            time: time,
+            user: {username: username, name: name, id: id},
+            like: {
+                total: 0,
+                users: []
+            },
+            replyTo: replyTo !== undefined ? JSON.parse(replyTo).id : "",
+            img: repostPost !== undefined ? repostPost.img : form.querySelector("#img").value,
+            ogId: ogId,
+            repost: repost,
+            reQuote: reQuote !== undefined ? JSON.parse(reQuote) : undefined,
+        }
+        fetch('/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({data: data, token: token}),
+        });
+        return repostPost === undefined ? window.location.href = `/?id=${data.id}` : window.location.href = `/?id=${data.ogId}`;
+    }
+
+    // Send a fetch request to the server for liking
+    function sendLikeRequest(post) {
+        post = JSON.parse(post)
+        fetch(`/like/`, {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              post: post,
+              user: {
+                id: id,
+                username: username,
+                name: name
+              },
+              token: token
+            }),
+        });
+        window.location.reload();
+    }
+
+</script>
 </html>
