@@ -1,8 +1,10 @@
 <%- include("partials/header.ejs") %>
+<% if(post) { %>
 <h3>
   <%= post.user.name %> <%= post.reQuote ? `is Requote to
   ${post.reQuote.user.name}`: "" %>
 </h3>
+<button onclick="followPost('<%= post.user.username %>')" id="follow">Follow</button>
 <h3><%= post.time %></h3>
 <h2><%= post.title %></h2>
 <% if(post.img) %> <img src="<%= post.img %>" />
@@ -49,4 +51,17 @@
   <button onclick="sendLikeRequest(reply, this)">Like: <%= reply.like.total %></button>
   <% if(reply.img) %> <img class="pfp" src="<%= reply.img %>" />
 </a>
-<% }); %> <% if(post.img) %> <%- include("partials/footer.ejs") %>
+<% }); %> <% if(post.img) %>
+<% } %>
+<%- include("partials/footer.ejs") %>
+<script>
+  fetch(`/user/follow/<%= post.user.username %>?myname=${username}`).then(res => res.json()).then(check => {
+    if(check.isFollowing) {
+      document.getElementById("follow").innerText = "Unfollow"
+    } 
+  });
+
+  if("<%= post.user.username %>" === username) {
+    document.getElementById("follow").remove();
+  }
+</script>

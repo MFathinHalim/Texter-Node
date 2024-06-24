@@ -14,8 +14,8 @@ const userSchema: Schema<userType> = new Schema<userType>({
     password: String,
     pp: String,
     ban: Boolean,
-    followers: followSchema,
-    following: followSchema,
+    followers: [followSchema],
+    following: [followSchema],
 })
 
 const userModel:Model<userType> = model("user", userSchema); 

@@ -56,14 +56,17 @@ class Users {
       $or: [{ username: username }]
     });
     if (isNameTaken) return this.#error[0];
+    const time = new Date().toLocaleDateString();
 
     const newUser: userType = {
-      id: this.#users.length.toString(),
+      id: "txtr-usr" + username + Math.random().toString(16).slice(2) + "tme:" + time,
       name: name,
       username: username,
       password: password,
       pp: "https://cdn.glitch.global/55de0177-2d52-43bf-a066-45796ec8e7c9/fathin.jpeg?v=1713409662281",
       ban: false,
+      followers: [],
+      following: []
     };
 
     this.#users.create(newUser); //di push
@@ -112,21 +115,22 @@ class Users {
     return true; // True if token is still within 15 minutes
   }
 
-  async follow(username: string, myusername: string) {
-    const user: Document<userType, any, any> & userType | null = await this.#users.findOne({ username: username });
+  async follow(username: string, myusername: string): Promise<userType | number> {
+    const user: Document<userType, any, any> & userType | null = await this.#users.findOne({ username });
     const mine: Document<userType, any, any> & userType | null = await this.#users.findOne({ username: myusername });
 
-    if (user && mine && user.followers && mine.following) {
-      const isFollowing = mine.following.some(f => f.username === user.username);
+    if (user && mine) {
+      const isFollowing = mine.following?.some(f => f.username === username);
       if (isFollowing) {
         // Unfollow: Remove user from mine's following and mine from user's followers
-        mine.following = mine.following.filter(f => f.username !== user.username);
-        user.followers = user.followers.filter(f => f.username !== mine.username);
+        mine.following = mine.following?.filter(f => f.username !== username);
+        user.followers = user.followers?.filter(f => f.username !== myusername);
       } else {
         // Follow: Add user to mine's following and mine to user's followers
-        user.followers.push(mine);
-        mine.following.push(user);
+        user.followers?.push(mine);
+        mine.following?.push(user);
       }
+      console.log(user.followers)
       await user.save();
       await mine.save();
       return 200
@@ -135,6 +139,21 @@ class Users {
     }    
   }
 
+  async checkFollow(username: string, myusername: string): Promise<userType | boolean> {
+    const user: Document<userType, any, any> & userType | null = await this.#users.findOne({ username });
+    const mine: Document<userType, any, any> & userType | null = await this.#users.findOne({ username: myusername });
+
+    if (user && mine) {
+      const isFollowing = mine.following?.some(f => f.username === username);
+      if (isFollowing) {
+        return true
+      } else {
+        return false
+      }
+    } else {
+      return this.#error[1];
+    }    
+  }
   async checkUserDetails(username: string, myusername: string) {
     let following:boolean = false;
     const user: Document<userType, any, any> & userType | null = await this.#users.findOne({ username: username });

@@ -74,7 +74,8 @@ class Posts {
 
   async liking(postId: string, user: userType): Promise<postType | number> {
     try {
-        const post: Document<postType, any, any> & postType | null = await this.#posts.findOne({ id: postId });      if (post) {
+      const post: Document<postType, any, any> & postType | null = await this.#posts.findOne({ id: postId });      
+      if (post) {
         const userAlreadyLike: userType | undefined = post.like.users.find(
           (entry: userType) => entry.username === user.username
         );

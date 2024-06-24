@@ -45,13 +45,17 @@ router.route("/madeToken").post(async (req: Request, res: Response) => {
   
 router.route("/user/details/:username").get(async (req: Request, res: Response) => {
   const user = await userClass.checkUserDetails(req.params.username, (req.query.myname?.toString() ||""));
-  console.log(user)
   return res.render("user", user);
 })
 
-router.route("/user/follow/:username").post(async (req: Request, res: Response) => {
+router.route("/user/follow/:username")
+.get(async (req: Request, res: Response) => {
+  const isFollowing:boolean | userType = await userClass.checkFollow(req.params.username, (req.query.myname?.toString() || ""));
+  return res.json({ isFollowing });
+})
+.post(async (req: Request, res: Response) => {
   const checkToken: boolean = await userClass.checkAccessToken(req.body.token)
-  if(checkToken) await userClass.follow(req.params.username, (req.query.myname?.toString() || ""));
+  if(checkToken) await userClass.follow(req.params.username, (req.body.myname));
   res.send(200);
 })
 
