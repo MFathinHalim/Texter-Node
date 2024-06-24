@@ -14,18 +14,25 @@ const router: RouterTypes = Router(); //Bikin Router Baru
 router
   .route("/") //Route /
   .get(async (req: Request, res: Response) => {
-    return res.render(
-      req.query.id === undefined ? "homepage" : "details",
-      req.query.id === undefined
-        ? await PostsClass.getData()
-        : await PostsClass.getData(req.query.id?.toString())
-    ); //? kalau get, liat dulu ada id atau enggak. Kalau ada details, kalau enggak homepage
+    return res.render( req.query.id ? "details" : "homepage", req.query.id ? await PostsClass.getData(req.query.id?.toString(), 0, 0) : {})
   })
   .post(async (req: Request, res: Response) => {
     const checkToken: boolean = await userClass.checkAccessToken(req.body.token)
     if(checkToken) await PostsClass.posting(req.body.data);
     return res.redirect(`/?id=${req.body.id}`);
   });
+
+router.route("/get/posts").get(async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1; // Get page from query
+    const limit = parseInt(req.query.limit as string) || 10; // Get limit from query
+    try {
+      const posts = await PostsClass.getData("", page, limit); // Assuming getData now takes page and limit
+      return res.json({ posts }); // Send posts as JSON response
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      return res.status(500).json({ error: "Failed to fetch posts" });
+    }
+})
 
 router.route("/like/")
 .post(async (req: Request, res: Response) => {

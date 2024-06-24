@@ -10,38 +10,73 @@
   </div>
   <button type="submit">Post</button>
 </form>
-<% posts.forEach((post) => { %>
-  <% if(!post.replyTo) { %>
-    <div>
-      <a href="/?id=<%= post.repost ? post.ogId : post.id %>">
-        <% if(post.repost) { %>
-        <h4><%= post.user.name %> was reposted</h4>
-        <img class="pfp" src="<%= post.repost.pp %>" />
-        <h3><%= post.repost.name %></h3>
-        <% } else { %>
-        <img class="pfp" src="<%= post.user.pp %>" />
-        <h3>
-          <%= post.user.name %> <%= post.reQuote ? `is Requote to
-          ${post.reQuote.user.name}`: "" %>
-        </h3>
-        <% } %>
-        <h3><%= post.time %></h3>
-        <h2><%= post.title %></h2>
-        <% if(post.img) %> <img src="<%= post.img %>" />
+<div id="post-container"> 
+</div>
+<script>
+  const postContainer = document.getElementById("post-container");
+  let currentPage = 1;
+  const postsPerPage = 10; // Adjust as needed
+  async function fetchPosts(page) {
+    try {
+      const response = await fetch(`/get
+/posts?page=${page}&limit=${postsPerPage}`);
+      const data = await response.json();
+      console.log(data)
+      return data.posts.posts;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      return [];
+    }
+  }
+  function renderPosts(posts) {
+  posts.forEach(post => {
+    const postElement = document.createElement("div");
+    postElement.innerHTML = `
+      <a href="/?id=${post.repost ? post.ogId : post.id}">
+        ${post.repost ? `
+          <h4>${post.user.name} was reposted</h4>
+          <img class="pfp" src="${post.repost.pp}" />
+          <h3>${post.repost.name}</h3>
+        ` : `
+          <img class="pfp" src="${post.user.pp}" />
+          <h3>
+            ${post.user.name} ${post.reQuote ? `is Requote to ${post.reQuote.user.name}` : ""}
+          </h3>
+        `}
+        <h3>${post.time}</h3>
+        <h2>${post.title.replace(/<[^>]+>/g, '')}</h2>
+        ${post.img ? `<img src="${post.img}" />` : ''}
       </a>
-      <% if(post.reQuote) { %>
-      <div style="border: 1px solid black; width: fit-content; padding: 10px; min-width: 300px;">
-        <a href="/?id=<%= post.reQuote.id %>">
-          <img class="pfp" src="<%= post.reQuote.user.pp %>" />
-          <h4><%= post.reQuote.user.name %></h4>
-          <h4><%= post.reQuote.time %></h4>
-          <h3><%= post.reQuote.title %></h3>
-          <% if(post.reQuote.img) %> <img src="<%= post.reQuote.img %>" />
-        </a>
-      </div>
-      <% } %>
-      <button onclick="sendLikeRequest('<%= JSON.stringify(post) %>', this)">Like: <%= post.like.total %></button>
-      <button onclick="sendPostRequest(undefined, undefined, undefined, '<%= post.id %>', '<%= JSON.stringify(post) %>')">Repost</button>
-    </div>
-<% } }); %> 
+      ${post.reQuote ? `
+        <div style="border: 1px solid black; width: fit-content; padding: 10px; min-width: 300px;">
+          <a href="/?id=${post.reQuote.id}">
+            <img class="pfp" src="${post.reQuote.user.pp}" />
+            <h4>${post.reQuote.user.name}</h4>
+            <h4>${post.reQuote.time}</h4>
+            <h3>${post.reQuote.title.replace(/<[^>]+>/g, '')}</h3>
+            ${post.reQuote.img ? `<img src="${post.reQuote.img}" />` : ''}
+          </a>
+        </div>
+      ` : ''}
+      <button onclick="sendLikeRequest('${JSON.stringify(post)}', this)">Like: ${post.like.total}</button>
+      <button onclick="sendPostRequest(undefined, undefined, undefined, '${post.id}', '${JSON.stringify(post)}')">Repost</button>
+    `;
+    postContainer.appendChild(postElement);
+  });
+}
+  async function loadMorePosts() {
+    currentPage++;
+    const newPosts = await fetchPosts(currentPage);
+    renderPosts(newPosts);
+  }
+  // Initial load
+  fetchPosts(currentPage).then(renderPosts);
+  // Add scroll listener for infinite scrolling
+  window.addEventListener("scroll", () => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 100) { // Adjust threshold as needed
+      loadMorePosts();
+    }
+  });
+</script>
 <%- include("partials/footer.ejs") %>
