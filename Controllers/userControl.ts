@@ -120,17 +120,31 @@ class Users {
     const mine: Document<userType, any, any> & userType | null = await this.#users.findOne({ username: myusername });
 
     if (user && mine) {
-      const isFollowing = mine.following?.some(f => f.username === username);
+      // @ts-ignore: Unreachable code error
+      const isFollowing = mine.following?.some(f => f.equals(user._id));    
       if (isFollowing) {
-        // Unfollow: Remove user from mine's following and mine from user's followers
-        mine.following = mine.following?.filter(f => f.username !== username);
-        user.followers = user.followers?.filter(f => f.username !== myusername);
+        await this.#users.findByIdAndUpdate(
+          mine._id,
+          { $pull: { following: user._id } },
+          { new: true } // Return the updated document
+        );
+        await this.#users.findByIdAndUpdate(
+          user._id,
+          { $pull: { followers: mine._id } },
+          { new: true }
+        );
       } else {
-        // Follow: Add user to mine's following and mine to user's followers
-        user.followers?.push(mine);
-        mine.following?.push(user);
+        await this.#users.findByIdAndUpdate(
+          mine._id,
+          { $push: { following: user._id } },
+          { new: true }
+        );
+        await this.#users.findByIdAndUpdate(
+          user._id,
+          { $push: { followers: mine._id } },
+          { new: true }
+        );
       }
-      console.log(user.followers)
       await user.save();
       await mine.save();
       return 200
@@ -139,26 +153,27 @@ class Users {
     }    
   }
 
-  async checkFollow(username: string, myusername: string): Promise<userType | boolean> {
+  async checkFollow(username: string, myusername: string): Promise<boolean> {
     const user: Document<userType, any, any> & userType | null = await this.#users.findOne({ username });
     const mine: Document<userType, any, any> & userType | null = await this.#users.findOne({ username: myusername });
-
-    if (user && mine) {
-      const isFollowing = mine.following?.some(f => f.username === username);
-      if (isFollowing) {
-        return true
-      } else {
-        return false
-      }
+  
+    if (user && mine) {      
+      // @ts-ignore: Unreachable code error
+      const isFollowing = mine.following?.some(f => f.equals(user._id))
+      // @ts-ignore: Unreachable code error
+      if(isFollowing) return true
+      return false;
     } else {
-      return this.#error[1];
-    }    
+      // Handle cases where users are not found (optional)
+      return false; // Or throw an error or log a message
+    }
   }
   async checkUserDetails(username: string, myusername: string) {
     let following:boolean = false;
     const user: Document<userType, any, any> & userType | null = await this.#users.findOne({ username: username });
     const mine: Document<userType, any, any> & userType | null = await this.#users.findOne({ username: myusername });
     if (user && mine && user.followers && mine.following) {
+      // @ts-ignore: Unreachable code error
       const isFollowing = mine.following.some(f => f.username === user.username);
       if(isFollowing) following = true;
       return {
