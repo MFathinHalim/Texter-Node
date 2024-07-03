@@ -187,6 +187,15 @@ class Users {
     }
   }
 
+  async checkUserId(userId: string): Promise<(Document<userType, any, any> & userType) | userType> {
+    const user: Document<userType, any, any> & userType | null = await this.#users.findOne({ id: userId });
+    if (user) {
+      return user;
+    } else {
+      return this.#error[1];
+    }
+  }
+
   async checkIsUserBan(username: string): Promise<boolean> {
     const user: Document<userType, any, any> & userType | null = await this.#users.findOne({ username: username });
     if(user && user.ban !== true) {

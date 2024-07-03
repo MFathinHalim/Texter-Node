@@ -1,38 +1,20 @@
 import { Model, Schema, Types, model } from "mongoose";
-import { userSchema } from "./user";
-
-// Schema for the embedded re-quoted post (without self-reference)
-const reQuotedPostSchema = new Schema<postType>({
-    id: String,
-    title: String,
-    time: String,
-    user: userSchema,
-    like: {
-      total: Number,
-      users: [userSchema],
-    },
-    replyTo: String,
-    img: String,
-    repost: userSchema,
-    ogId: String,
-    // No reQuote field here to avoid circularity 
-});
 
 // Main post schema
 const postSchema = new Schema<postType>({
     id: String,
     title: String,
     time: String,
-    user: userSchema,
+    user: { type: Types.ObjectId, ref: 'user' },
     like: {
       total: Number,
-      users: [userSchema],
+      users: [{ type: Types.ObjectId, ref: 'user' }],
     },
     replyTo: String,
     img: String,
-    repost: userSchema,
+    repost: { type: Types.ObjectId, ref: 'user' },
     ogId: String,
-    reQuote: reQuotedPostSchema // Embed the separate schema
+    reQuote: { type: Types.ObjectId, ref: 'posts' } // Embed the separate schema
 });
 
 const mainModel:Model<postType> = model<postType>("posts", postSchema);

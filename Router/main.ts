@@ -18,7 +18,10 @@ router
   })
   .post(async (req: Request, res: Response) => {
     const checkToken: boolean = await userClass.checkAccessToken(req.body.token)
-    if(checkToken) await PostsClass.posting(req.body.data);
+    if(checkToken) {
+      const user: any = await userClass.checkUserId(req.body.data.user.id);
+      await PostsClass.posting(req.body.data, user);
+    }
     return res.redirect(`/?id=${req.body.id}`);
   });
 
@@ -39,7 +42,8 @@ router.route("/like/")
   const checkToken: boolean = await userClass.checkAccessToken(req.body.token)
   let likes:number | postType = 0;
   if(checkToken) {
-    likes = await PostsClass.liking(req.body.post.id, req.body.user);
+    const user: any = await userClass.checkUserId(req.body.user.id);
+    likes = await PostsClass.liking(req.body.post.id, user);
   }
   return res.json({
     likes:likes

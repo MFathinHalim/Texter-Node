@@ -5,7 +5,6 @@ declare type userType = {
   password?: string;
   pp?: string;
   ban?: boolean;
-  bookmark?: postType[];
   accessToken?: {
     accessNow: string;
     timeBefore: string;
@@ -21,7 +20,7 @@ declare type postType = {
   user: userType;
   like: {
     total: number;
-    users: userType[];
+    users: any;
   };
   replyTo: string;
   img?: string;

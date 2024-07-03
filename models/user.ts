@@ -7,8 +7,8 @@ const userSchema: Schema<userType> = new Schema<userType>({
     password: String,
     pp: String,
     ban: Boolean,
-    followers: [{ type: Types.ObjectId, ref: 'User' }],
-    following: [{ type: Types.ObjectId, ref: 'User' }], 
+    followers: [{ type: Types.ObjectId, ref: 'user' }],
+    following: [{ type: Types.ObjectId, ref: 'user' }], 
 })
 
 const userModel:Model<userType> = model("user", userSchema); 
