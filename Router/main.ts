@@ -5,6 +5,11 @@ import Posts from "../Controllers/postControl";
 import Users from "../Controllers/userControl";
 import * as dotenv from "dotenv"
 
+const multer = require("multer");
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 dotenv.config();
 
 const userClass: Users = Users.getInstances(); //Cek classnya
@@ -13,14 +18,15 @@ const router: RouterTypes = Router(); //Bikin Router Baru
 
 router
   .route("/") //Route /
-  .get(async (req: Request, res: Response) => {
+  .get(upload.single("image"), async (req: Request, res: Response) => {
     return res.render( req.query.id ? "details" : "homepage", req.query.id ? await PostsClass.getData(req.query.id?.toString(), 0, 0) : {})
   })
   .post(async (req: Request, res: Response) => {
     const checkToken: boolean = await userClass.checkAccessToken(req.body.token)
     if(checkToken) {
       const user: any = await userClass.checkUserId(req.body.data.user.id);
-      await PostsClass.posting(req.body.data, user);
+      //@ts-ignore: Unreachable code error
+      await PostsClass.posting(req.body.data, user, req.file !== undefined ? req.file.buffer : "");
     }
     return res.redirect(`/?id=${req.body.id}`);
   });

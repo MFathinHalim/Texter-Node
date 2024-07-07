@@ -1,6 +1,16 @@
 import { type Model, type Document, Types } from "mongoose";
 import mainModel  from "../models/post";
+import ImageKit from "imagekit";
 const { htmlToText } = require('html-to-text');
+import * as dotenv from "dotenv"
+
+dotenv.config();
+
+const imagekit: ImageKit = new ImageKit({
+  publicKey: process.env.publicImg ||  "",
+  privateKey: process.env.privateImg || "",
+  urlEndpoint: process.env.urlEndPoint || "",
+})
 
 //? Kelas untuk postingan
 class Posts {
@@ -99,7 +109,7 @@ class Posts {
     }
   }
 
-  async posting(post: postType, user: any): Promise<postType> {
+  async posting(post: postType, user: any,file: any): Promise<postType> {
     if (!post.title || post.title === "")
       return this.#notFound;
     if(post.repost) {
@@ -108,6 +118,17 @@ class Posts {
     }
     post.user = user._id
     post.title = htmlToText(post.title);
+    if(file) {
+      await imagekit.upload({
+        file: file,
+        fileName: `image-${post.title}-${post.user}-${post.time}`,
+        useUniqueFileName: false,
+        folder: "Txtr"
+      }, function (error: any, result: any) {
+        if (error) console.error("Error uploading to ImageKit:", error);
+        post.img = result.url;
+      })
+    }
     await mainModel.create(post)
     return post;
   }
