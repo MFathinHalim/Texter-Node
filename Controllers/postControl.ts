@@ -31,6 +31,7 @@ class Posts {
         id: "System",
         name: "System",
         username: "system",
+        desc: "system",
         password: "system",
         pp: "",
         ban: false,

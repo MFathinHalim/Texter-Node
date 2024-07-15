@@ -4,6 +4,7 @@ const userSchema: Schema<userType> = new Schema<userType>({
     id: String,
     name: String,
     username: String,
+    desc: String,
     password: String,
     pp: String,
     ban: Boolean,
