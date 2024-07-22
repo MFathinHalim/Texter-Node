@@ -37,10 +37,11 @@
     // Send a fetch request to the server for posting
     function sendPostRequest(form, replyTo, reQuote, ogId, repostPost) {
         event.preventDefault(); // Prevent default form submission
-        repostPost = repostPost ? JSON.parse(repostPost) : undefined
+        repostPost = repostPost ? JSON.parse(repostPost) : undefined;
         const time = new Date().toLocaleDateString();
         const repost = repostPost ? repostPost.user : undefined;
         const formData = new FormData(); 
+
         // Append data to FormData
         formData.append('id', "txtr" + Math.random().toString(16).slice(2) + "tme:" + time);
         formData.append('title', repostPost ? repostPost.title : form.querySelector("#title").value);
@@ -51,20 +52,27 @@
         formData.append('ogId', ogId);
         formData.append('repost', JSON.stringify(repost));
         formData.append('reQuote', reQuote ? JSON.stringify(JSON.parse(reQuote)) : undefined);
-        formData.append('token', token); // Assuming you have 'token' available
+        formData.append('token', token); // Ensure 'token' is defined and accessible
+
         // Handle image upload
         if (form.querySelector("#img").files[0]) {
             formData.append('img', form.querySelector("#img").files[0]); 
         } else {
             formData.append('img', ''); // Empty string if no image selected
         }
+
+        // Send POST request using fetch
         fetch('/', {
             method: 'POST',
             body: formData,
         }).then(() => {
+            // Redirect after successful POST request
             return repostPost === undefined ? window.location.href = `/?id=${data.id}` : window.location.href = `/?id=${data.ogId}`;
-        }) ;
+        }).catch(error => {
+            console.error('Error sending POST request:', error);
+        });
     }
+
 
     function sendLikeRequest(post, button) {
         post = JSON.parse(post)
