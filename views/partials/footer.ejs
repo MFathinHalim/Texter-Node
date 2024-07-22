@@ -1,3 +1,4 @@
+</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 <script>
@@ -43,17 +44,20 @@
         const formData = new FormData(); 
 
         // Append data to FormData
-        formData.append('id', "txtr" + Math.random().toString(16).slice(2) + "tme:" + time);
-        formData.append('title', repostPost ? repostPost.title : form.querySelector("#title").value);
-        formData.append('time', time);
-        formData.append('user', JSON.stringify({username: username, name: name, id: id})); 
-        formData.append('like', JSON.stringify({ total: 0, users: [] }));
-        formData.append('replyTo', replyTo ? JSON.parse(replyTo).id : "");
-        formData.append('ogId', ogId);
-        formData.append('repost', JSON.stringify(repost));
-        formData.append('reQuote', reQuote ? JSON.stringify(JSON.parse(reQuote)) : undefined);
-        formData.append('token', token); // Ensure 'token' is defined and accessible
+        const data = {
+            id: "txtr" + Math.random().toString(16).slice(2) + "tme:" + time,
+            title: repostPost ? repostPost.title : form.querySelector("#title").value,
+            time: time,
+            user: {username: username, name: name, id: id},
+            like: { total: 0, users: [] },
+            replyTo: replyTo ? JSON.parse(replyTo).id : "",
+            ogId: ogId,
+            repost: repost,
+            reQuote: reQuote ? JSON.parse(reQuote) : undefined
+        };
 
+        formData.append('data', JSON.stringify(data));
+        formData.append('token', token); // Assuming you have 'token' available
         // Handle image upload
         if (form.querySelector("#img").files[0]) {
             formData.append('img', form.querySelector("#img").files[0]); 
@@ -93,7 +97,7 @@
         })
         .then(res => res.json()) // Parse the JSON response
         .then(data => { 
-            button.innerText = "Like: " + data.likes; // Update the button text with the new like count
+            button.innerHTML = '<i class="fa-solid fa-heart"></i> ' + data.likes; // Update the button text with the new like count
         })
         .catch(error => {
             console.error("Error sending like request:", error); 

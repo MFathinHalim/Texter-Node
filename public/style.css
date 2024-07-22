@@ -1,24 +1,39 @@
-@import url('https://fonts.googleapis.com/css?family=Mulish:700|Ubuntu:400');
+@import url("https://fonts.googleapis.com/css?family=Mulish:700|Ubuntu:400");
 
 :root {
   --text: #ededed;
-  --text2: #B6B6B6;
+  --text2: #b6b6b6;
   --background: #121212;
   --background2: #212121;
-  --background3: #F7F5FE;
+  --background3: #f7f5fe;
   --primary: #f8f6fe;
   --secondary: #393e46;
   --accent1: #ffd36b;
-  --accent2: #8CBDE8;
-  --success: #71D474;
-  --error: #E88C8C;
+  --accent2: #8cbde8;
+  --success: #71d474;
+  --error: #e88c8c;
+}
+
+.pfp {
+  border: 2px solid var(--accent1);
+  width: 100%;
+  height: 100%;
+  max-width: 70px;
+  max-height: 70px;
+}
+h4 {
+  font-family: "Mulish" !important;
 }
 
 body {
   background: var(--background) !important;
   color: var(--text) !important;
-  font-family: 'Ubuntu' !important;
-  font-weight: 400 !important;
+  font-family: "Ubuntu" !important;
+}
+
+a {
+  color: var(--text) !important;
+  text-decoration: none !important;
 }
 
 .btn-primary {
@@ -30,6 +45,12 @@ body {
 .btn-secondary {
   background-color: var(--accent1) !important;
   border: 1px solid var(--accent1) !important;
+  color: var(--background) !important;
+}
+
+.btn-success {
+  background-color: var(--success) !important;
+  border: 1px solid var(--success) !important;
   color: var(--background) !important;
 }
 
@@ -47,6 +68,11 @@ textarea {
 .bg-dark {
   background-color: var(--background) !important;
 }
+.sticky-on-navbar {
+  position: sticky;
+  top: 56px; /* Adjust this value based on your navbar height */
+  z-index: 1020; /* Ensure it's above the navbar if necessary */
+}
 .bg-dark-glass {
   /* From https://css.glass */
   background: rgba(18, 18, 18, 0.49) !important;
@@ -61,22 +87,22 @@ textarea {
   background-color: var(--background3) !important;
 }
 
+html {
+  font-size: 100% !important;
+} /* 16px */
 
-h1, h2, h3, h4, h5 {
-  font-family: 'Mulish' !important;
-  font-weight: 700 !important;
+h1 {
+  font-size: 5.652rem !important; /* 90.4px */
 }
 
-html {font-size: 100% !important;} /* 16px */
+h2 {
+  font-size: 3.997rem !important; /* 64px */
+}
 
-h1 {font-size: 5.652rem !important; /* 90.4px */}
+h5 {
+  font-size: 1.414rem !important; /* 22.56px */
+}
 
-h2 {font-size: 3.997rem !important; /* 64px */}
-
-h3 {font-size: 2.827rem !important; /* 45.28px */}
-
-h4 {font-size: 1.999rem !important; /* 32px */}
-
-h5 {font-size: 1.414rem !important; /* 22.56px */}
-
-small {font-size: 0.707rem !important; /* 11.36px */}
+small {
+  font-size: 0.707rem !important; /* 11.36px */
+}
