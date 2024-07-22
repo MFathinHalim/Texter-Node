@@ -40,39 +40,54 @@
       return [];
     }
   }
+  function escapeHTMLAttribute(jsonString) {
+    return jsonString.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
   function renderPosts(posts) {
   posts.forEach(post => {
     const postElement = document.createElement("div");
     postElement.innerHTML = `
-    <div class="">
+    <div class="card bg-dark text-white p-3 mt-2">
       <a href="/?id=${post.repost ? post.ogId : post.id}">
+        <article class="d-flex pt-2">
         ${post.repost ? `
           <h4>${post.user.name} was reposted</h4>
-          <img class="pfp" src="${post.repost.pp}" />
+          <img class="pfp rounded-circle" style="max-width: 150px; max-height: 150px;" src="${post.user.pp}" />
           <h3>${post.repost.name}</h3>
         ` : `
-          <img class="pfp" src="${post.user.pp}" />
-          <h3>
-            ${post.user.name} ${post.reQuote ? `is Requote to ${post.reQuote.user.name}` : ""}
-          </h3>
-        `}
-        <h3>${post.time}</h3>
-        <h2>${post.title.replace(/<[^>]+>/g, '')}</h2>
-        ${post.img ? `<img src="${post.img}" />` : ''}
+            <img class="pfp rounded-circle" src="${post.user.pp}" />
+            <div class="ms-2">
+              <h4>
+                ${post.user.name} ${post.reQuote ? `is Requote to ${post.reQuote.user.name}` : ""}
+              </h4>
+              `}
+              <h4 class="text-secondary">${post.time}</h4>
+            </div>
+        </article>
+        <h3>${post.title.replace(/<[^>]+>/g, '')}</h3>
+        ${post.img ? `<!--img src="${post.img}" /-->` : ''}
       </a>
       ${post.reQuote ? `
-        <div style="border: 1px solid black; width: fit-content; padding: 10px; min-width: 300px;">
+        <div class="card bg-dark text-white p-2 mb-2 mt-2 border-1 border-secondary">
           <a href="/?id=${post.reQuote.id}">
-            <img class="pfp" src="${post.reQuote.user.pp}" />
-            <h4>${post.reQuote.user.name}</h4>
-            <h4>${post.reQuote.time}</h4>
+            <article class="d-flex pt-2">
+              <img class="pfp rounded-circle" src="${post.reQuote.user.pp}" />
+              <div class="ms-2">
+                <h3>${post.reQuote.user.name}</h4>
+                <h4 class="text-secondary">${post.reQuote.time}</h4>
+              </div>
+            </article>
             <h3>${post.reQuote.title.replace(/<[^>]+>/g, '')}</h3>
             ${post.reQuote.img ? `<img src="${post.reQuote.img}" />` : ''}
           </a>
         </div>
       ` : ''}
-      <button onclick="sendLikeRequest('${JSON.stringify(post)}', this)">Like: ${post.like.total}</button>
-      <button onclick="sendPostRequest(undefined, undefined, undefined, '${post.id}', '${JSON.stringify(post)}')">Repost</button>
+      <div class="d-flex">
+        <button class="btn btn-success rounded-pill" onclick="sendLikeRequest('${escapeHTMLAttribute(JSON.stringify(post))}', this)">
+            <i class="fa-solid fa-heart"></i> ${post.like.total}
+        </button>
+        <button class="btn btn-secondary rounded-pill ms-1" onclick="sendPostRequest(undefined, undefined, undefined, '${post.id}', '${JSON.stringify(post)}')"><i class="fa-solid fa-recycle"></i> Repost</button>
+      </div>
     </div>
     `;
     postContainer.appendChild(postElement);

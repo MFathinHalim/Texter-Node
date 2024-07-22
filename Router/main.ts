@@ -18,15 +18,16 @@ const router: RouterTypes = Router(); //Bikin Router Baru
 
 router
   .route("/") //Route /
-  .get(upload.single("image"), async (req: Request, res: Response) => {
+  .get(async (req: Request, res: Response) => {
     return res.render( req.query.id ? "details" : "homepage", req.query.id ? await PostsClass.getData(req.query.id?.toString(), 0, 0) : {})
   })
-  .post(async (req: Request, res: Response) => {
+  .post(upload.single("image"), async (req: Request, res: Response) => {
     const checkToken: boolean = await userClass.checkAccessToken(req.body.token)
     if(checkToken) {
-      const user: any = await userClass.checkUserId(req.body.data.user.id);
+      const user: any = await userClass.checkUserId(JSON.parse(req.body.data).user.id);
+      console.log(user)
       //@ts-ignore: Unreachable code error
-      await PostsClass.posting(req.body.data, user, req.file !== undefined ? req.file.buffer : "");
+      await PostsClass.posting(JSON.parse(req.body.data), user, req.body.img !== undefined ? req.body.img.buffer : "");
     }
     return res.redirect(`/?id=${req.body.id}`);
   });

@@ -16,7 +16,7 @@ app.set("view engine", "ejs"); //set view enginenya jadi ejs
 app.use(express.static(path.join(__dirname, "/public"))); //TODO buat frontendnya, css js image di taruh di public
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
 //? Jalankan Routernya
 app.use("/", router); //* Router Posts

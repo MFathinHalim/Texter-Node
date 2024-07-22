@@ -14,11 +14,23 @@
   --error: #E88C8C;
 }
 
+.pfp {
+  border: 2px solid var(--accent1);
+  width: 100%;
+  height: 100%;
+  max-width: 100px; max-height: 100px;
+}
+
 body {
   background: var(--background) !important;
   color: var(--text) !important;
   font-family: 'Ubuntu' !important;
   font-weight: 400 !important;
+}
+
+a {
+  color: var(--text) !important;
+  text-decoration: none !important;
 }
 
 .btn-primary {
@@ -30,6 +42,12 @@ body {
 .btn-secondary {
   background-color: var(--accent1) !important;
   border: 1px solid var(--accent1) !important;
+  color: var(--background) !important;
+}
+
+.btn-success {
+  background-color: var(--success) !important;
+  border: 1px solid var(--success) !important;
   color: var(--background) !important;
 }
 
