@@ -7,11 +7,13 @@
   />
   <div class="d-flex flex-column ms-2 me-auto">
     <!-- ms-2 untuk margin kiri 2, me-auto untuk margin kanan otomatis -->
-    <h3 class="h2" style="margin-bottom: 5px"><%= post.user.name %></h3>
+    <h3 class="h2" style="margin-bottom: 3px"><%= post.user.name %></h3>
     <p style="margin-bottom: 5px" class="text-secondary">
       @<%= post.user.username %>
     </p>
-    <p style="margin-bottom: 0">Etto...Hi:3</p>
+    <p style="margin-bottom: 0">
+      <%= post.user.desc != "" ? post.user.desc : "" %>
+    </p>
   </div>
 
   <button
@@ -53,8 +55,8 @@
       <article class="d-flex pt-2">
         <img class="pfp rounded-circle" src="<%= post.reQuote.user.pp %>" />
         <div class="ms-2">
-          <h4><%= post.reQuote.user.name %></h4>
-          <h4 class="text-secondary"><%= post.reQuote.time %></h4>
+          <h4 class="mb-1"><%= post.reQuote.user.name %></h4>
+          <h5 class="text-secondary"><%= post.reQuote.time %></h5>
         </div>
       </article>
       <h3><%= post.reQuote.title.replace(/<[^>]+>/g, "") %></h3>
@@ -152,6 +154,20 @@
     <h3><%= reply.title.replace(/<[^>]+>/g, "") %></h3>
     <% if(reply.img) { %> <img src="<%= reply.img %>" /> <% } %>
   </a>
+  <div class="d-flex mb-2">
+    <button
+      class="btn btn-success rounded-pill"
+      onclick="sendLikeRequest('<%= JSON.stringify(reply) %>', this)"
+    >
+      <i class="fa-solid fa-heart"></i> <%= reply.like.total %>
+    </button>
+    <button
+      class="btn btn-secondary rounded-pill ms-1"
+      onclick="sendPostRequest(undefined, undefined, undefined, '<%= reply.id %>', '<%= JSON.stringify(reply) %>')"
+    >
+      <i class="fa-solid fa-recycle"></i> Repost
+    </button>
+  </div>
 </div>
 <% }); %> <% } %> <%- include("partials/footer.ejs") %>
 <script>
