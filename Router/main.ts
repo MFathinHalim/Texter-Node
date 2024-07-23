@@ -86,6 +86,15 @@ router
     );
     return res.render("user", user);
   });
+router
+  .route("/user/details/json/:username")
+  .get(async (req: Request, res: Response) => {
+    const user = await userClass.checkUserDetails(
+      req.params.username,
+      req.params.username
+    );
+    return res.json({ user: user });
+  });
 
 router
   .route("/user/follow/:username")

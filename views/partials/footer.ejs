@@ -18,6 +18,14 @@
     
                 return window.location.href = "/login"
             } 
+            fetch(`/user/details/json/${username}`).then(res => res.json()).then(hasil => {
+                document.getElementById("mypfp").src = hasil.user.user.pp;
+                document.getElementById("myname").innerText = hasil.user.user.name;
+                document.getElementById("myusername").innerText = `@${hasil.user.user.username}`;
+                document.getElementById("mydesc").innerText = hasil.user.user.desc != undefined ? hasil.user.user.desc : "";
+                document.getElementById("myfollowing").innerHTML = `<i class="fa-solid fa-user-group"></i> ${hasil.user.user.following.length} following`;
+                document.getElementById("myfollowers").innerHTML = `<i class="fa-solid fa-user-group"></i> ${hasil.user.user.followers.length} followers`;
+            });
             return
         });
         fetch('/madeToken', {

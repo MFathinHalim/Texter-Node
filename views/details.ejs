@@ -137,19 +137,23 @@
       ><i class="fa-solid fa-image"></i
     ></label>
   </form>
-  <% replies.forEach((reply) => { %>
-  <a href="/?id=<%=reply.id %>">
-    <h3><%= reply.user.name %></h3>
-    <h2><%= reply.title %></h2>
-    <h3><%= reply.time %></h3>
-    <button onclick="sendLikeRequest(reply, this)">
-      <i class="fa-solid fa-heart"></i> <%= reply.like.total %>
-    </button>
-    <% if(reply.img) %> <img class="pfp" src="<%= reply.img %>" />
-  </a>
-  <% }); %> <% if(post.img) %>
 </div>
-<% } %> <%- include("partials/footer.ejs") %>
+
+<% replies.forEach((reply) => { %>
+<div class="card bg-dark text-white p-3 mt-2 rounded-lg">
+  <a href="/?id=<%=reply.id %>">
+    <article class="d-flex pt-2">
+      <img class="pfp rounded-circle" src="<%= reply.user.pp %>" />
+      <div class="ms-2">
+        <h4><%= reply.user.name %></h4>
+        <h4 class="text-secondary"><%= reply.time %></h4>
+      </div>
+    </article>
+    <h3><%= reply.title.replace(/<[^>]+>/g, "") %></h3>
+    <% if(reply.img) { %> <img src="<%= reply.img %>" /> <% } %>
+  </a>
+</div>
+<% }); %> <% } %> <%- include("partials/footer.ejs") %>
 <script>
   fetch(`/user/follow/<%= post.user.username %>?myname=${username}`)
     .then((res) => res.json())
