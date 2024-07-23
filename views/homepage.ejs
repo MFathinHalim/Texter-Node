@@ -1,46 +1,38 @@
 <%- include("partials/header.ejs") %>
-      <div>
-        <form
-          class="card bg-dark text-light p-3"
-          enctype="multipart/form-data"
-          onsubmit="sendPostRequest(this, undefined, undefined, undefined, undefined)"
-        >
-          <div class="mb-3">
-            <textarea
-              style="height: 120px"
-              type="text"
-              class="form-control"
-              id="title"
-              name="title"
-              placeholder="What's Happening?!"
-            ></textarea>
-          </div>
-          <div class="mb-3">
-            <input
-              type="file"
-              class="form-control d-none"
-              id="img"
-              name="img"
-            />
-            <button
-              type="submit"
-              class="btn btn-primary rounded-pill p-4 pt-2 pb-2"
-              style="font-size: larger"
-            >
-              Post
-            </button>
-            <label
-              for="img"
-              class="btn btn-secondary rounded-pill p-3 pt-2 pb-2"
-              style="font-size: larger"
-              >Image</label
-            >
-          </div>
-        </form>
-        <div id="post-container"></div>
-      </div>
+<div>
+  <form
+    class="card bg-dark text-light p-3"
+    enctype="multipart/form-data"
+    onsubmit="sendPostRequest(this, undefined, undefined, undefined, undefined)"
+  >
+    <div class="mb-3">
+      <textarea
+        style="height: 120px"
+        type="text"
+        class="form-control"
+        id="title"
+        name="title"
+        placeholder="What's Happening?!"
+      ></textarea>
     </div>
-  </div>
+    <div class="mb-3">
+      <button
+        type="submit"
+        class="btn btn-primary rounded-pill p-4 pt-2 pb-2"
+        style="font-size: larger"
+      >
+        Post
+      </button>
+      <input type="file" class="form-control d-none" id="img" name="img" />
+      <label
+        for="img"
+        class="btn btn-secondary rounded-pill p-3 pt-2 pb-2"
+        style="font-size: larger"
+        ><i class="fa-solid fa-image"></i
+      ></label>
+    </div>
+  </form>
+  <div id="post-container"></div>
 </div>
 <script>
   const postContainer = document.getElementById("post-container");
