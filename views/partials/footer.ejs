@@ -98,9 +98,9 @@
         formData.append('token', token); // Assuming you have 'token' available
         // Handle image upload
         if (form.querySelector("#img").files[0]) {
-            formData.append('img', form.querySelector("#img").files[0]); 
+            formData.append('image', form.querySelector("#img").files[0]); 
         } else {
-            formData.append('img', ''); // Empty string if no image selected
+            formData.append('image', ''); // Empty string if no image selected
         }
 
         // Send POST request using fetch
@@ -155,7 +155,7 @@
             }),
         })
         .then(() => {
-            console.log("Berhasil Follow")
+            window.location.reload()
         })
     }
 

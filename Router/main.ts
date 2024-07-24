@@ -9,40 +9,85 @@ const multer = require("multer");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const ImageKit = require("imagekit");
 
 dotenv.config();
+
+const imagekit = new ImageKit({
+  publicKey: process.env.publicImg,
+  privateKey: process.env.privateImg,
+  urlEndpoint: process.env.urlEndPoint,
+});
 
 const userClass: Users = Users.getInstances(); //Cek classnya
 const PostsClass: Posts = Posts.getInstances(); //Cek classnya
 const router: RouterTypes = Router(); //Bikin Router Baru
 
 router
-  .route("/") //Route /
+  .route("/") // Route /
   .get(async (req: Request, res: Response) => {
-    return res.render(
-      req.query.id ? "details" : "homepage",
-      req.query.id
+    try {
+      const data = req.query.id
         ? await PostsClass.getData(req.query.id?.toString(), 0, 0)
-        : {}
-    );
+        : {};
+      return res.render(req.query.id ? "details" : "homepage", data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      return res.status(500).send("Failed to fetch data");
+    }
   })
   .post(upload.single("image"), async (req: Request, res: Response) => {
-    const checkToken: boolean = await userClass.checkAccessToken(
-      req.body.token
-    );
-    if (checkToken) {
-      const user: any = await userClass.checkUserId(
-        JSON.parse(req.body.data).user.id
+    try {
+      const checkToken: boolean = await userClass.checkAccessToken(
+        req.body.token
       );
-      console.log(user);
+      if (!checkToken) {
+        throw new Error("Invalid token");
+      }
+
+      const userData = JSON.parse(req.body.data);
+      const user: any = await userClass.checkUserId(userData.user.id);
+
+      let img: string = ""; // Initialize image URL
       //@ts-ignore: Unreachable code error
-      await PostsClass.posting(
-        JSON.parse(req.body.data),
-        user,
-        req.body.img !== undefined ? req.body.img.buffer : ""
-      );
+      if (req.file) {
+        // If a file is uploaded, process it
+        //@ts-ignore: Unreachable code error
+        const buffer = req.file.buffer;
+        const id: string = `${userData.title}-${userData.user.id}-${userData.time}`;
+        // Upload image to ImageKit
+        await imagekit.upload(
+          {
+            file: buffer,
+            fileName: `image-${id}.jpg`,
+            useUniqueFileName: false,
+            folder: "SG",
+          },
+          async function (error: any, result: any) {
+            if (error) {
+              console.error("Error uploading to ImageKit:", error);
+              return res
+                .status(500)
+                .json({ msg: "Terjadi kesalahan saat mengunggah file" });
+            }
+
+            img = result.url; // Save the uploaded image URL
+            console.log(img);
+
+            // Post data to PostsClass
+            await PostsClass.posting(userData, user, img);
+            return res.redirect(`/?id=${req.body.id}`);
+          }
+        );
+      } else {
+        // Post data to PostsClass
+        await PostsClass.posting(userData, user, img);
+        return res.redirect(`/?id=${req.body.id}`);
+      }
+    } catch (error) {
+      console.error("Error posting data:", error);
+      return res.status(500).send("Failed to post data");
     }
-    return res.redirect(`/?id=${req.body.id}`);
   });
 
 router.route("/get/posts").get(async (req: Request, res: Response) => {
@@ -152,7 +197,12 @@ router
     return res.render("signup"); //? ya render
   })
   .post(async (req: Request, res: Response) => {
-    await userClass.signUp(req.body.name, req.body.username, req.body.password); //di adain
+    await userClass.signUp(
+      req.body.name,
+      req.body.username,
+      req.body.password,
+      req.body.desc
+    ); //di adain
     return res.redirect("/login"); //lalu ke /login
   });
 
