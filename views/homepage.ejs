@@ -1,7 +1,7 @@
 <%- include("partials/header.ejs") %>
 <div>
   <form
-    class="card bg-dark text-light p-3"
+    class="card bg-dark text-light p-3 border-light rounded-0"
     enctype="multipart/form-data"
     onsubmit="sendPostRequest(this, undefined, undefined, undefined, undefined)"
   >
@@ -9,13 +9,21 @@
       <textarea
         style="height: 120px"
         type="text"
-        class="form-control"
+        class="form-control border-light"
         id="title"
         name="title"
         placeholder="What's Happening?!"
       ></textarea>
     </div>
-    <div class="mb-3">
+    <div class="mb-3 d-flex justify-content-between">
+      <input type="file" class="form-control d-none" id="img" name="img" />
+      <label
+        for="img"
+        class="btn btn-secondary rounded-pill p-3 pt-2 pb-2"
+        style="font-size: larger"
+      >
+        <i class="fa-solid fa-image"></i>
+      </label>
       <button
         type="submit"
         class="btn btn-primary rounded-pill p-4 pt-2 pb-2"
@@ -23,13 +31,6 @@
       >
         Post
       </button>
-      <input type="file" class="form-control d-none" id="img" name="img" />
-      <label
-        for="img"
-        class="btn btn-secondary rounded-pill p-3 pt-2 pb-2"
-        style="font-size: larger"
-        ><i class="fa-solid fa-image"></i
-      ></label>
     </div>
   </form>
   <div id="post-container"></div>
@@ -57,7 +58,7 @@
     posts.forEach((post) => {
       const postElement = document.createElement("div");
       postElement.innerHTML = `
-    <div class="card bg-dark text-white p-3 mt-2">
+    <div class="card bg-dark text-white p-3 post rounded-0 border-light">
       <a href="/?id=${post.repost ? post.ogId : post.id}">
         <article class="d-flex pt-2">
         ${
@@ -103,16 +104,24 @@
           : ""
       }
       <div class="d-flex">
-        <button class="btn btn-success rounded-pill" onclick="sendLikeRequest('${escapeHTMLAttribute(
+        <button class="btn btn-danger rounded-pill" onclick="sendLikeRequest('${escapeHTMLAttribute(
           JSON.stringify(post)
         )}', this)">
-            <i class="fa-solid fa-heart"></i> ${post.like.total}
+        <i class="fa-solid fa-heart"></i> ${post.like.total}
         </button>
-        <button class="btn btn-secondary rounded-pill ms-1" onclick="sendPostRequest(undefined, undefined, undefined, '${
+        <a href="/?id=${
           post.id
-        }', '${JSON.stringify(
-        post
-      )}')"><i class="fa-solid fa-recycle"></i> Repost</button>
+        }" class="btn btn-secondary rounded-pill text-black ms-2">
+            <i class="fa-solid fa-comment"></i> Reply
+        </a>
+        <button class="btn btn-success rounded-pill ms-2" onclick="sendPostRequest(undefined, undefined, undefined, '${
+          post.id
+        }', ${JSON.stringify(post)
+        .replace(/</g, "\\u003c")
+        .replace(
+          />/g,
+          "\\u003e"
+        )})"><i class="fa-solid fa-recycle"></i> Repost</button>
       </div>
     </div>
     `;
