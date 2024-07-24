@@ -143,6 +143,10 @@ a {
   color: var(--background) !important;
 }
 
+img:not(.rounded-circle) {
+  max-width: 100% !important;
+}
+
 textarea,
 input {
   background-color: rgba(0, 0, 0, 0) !important;

@@ -88,7 +88,16 @@
             </div>
         </article>
         <h3 class="h4 mt-2">${post.title.replace(/<[^>]+>/g, "")}</h3>
-        ${post.img ? `<!--img src="${post.img}" /-->` : ""}
+        ${
+          post.img
+            ? `<img
+                style="border-radius: 2% !important"
+                class="mb-3"
+                src="${post.img}"
+                onerror="this.remove()"
+              />`
+            : ""
+        }
       </a>
       ${
         post.reQuote
