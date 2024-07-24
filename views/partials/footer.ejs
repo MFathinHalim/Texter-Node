@@ -32,17 +32,21 @@
     const name = localStorage.getItem("name");
     const id = localStorage.getItem("id");
 
+    function logout() {
+        localStorage.removeItem("name");
+        localStorage.removeItem("username");
+        localStorage.removeItem("id");
+
+        return window.location.href = "/login"
+    }
+
     if (!window.location.href.toString().includes("/login") && !window.location.href.toString().includes("/signup") ){
         if(!username) {
             window.location.href = "/login"
         }
         fetch(`/user/check?username=${username}`).then(res => res.json()).then(check => {
             if(check.check === true) {
-                localStorage.removeItem("name");
-                localStorage.removeItem("username");
-                localStorage.removeItem("id");
-    
-                return window.location.href = "/login"
+                logout()
             } 
             fetch(`/user/details/json/${username}`).then(res => res.json()).then(hasil => {
                 document.getElementById("mypfp").src = hasil.user.user.pp;

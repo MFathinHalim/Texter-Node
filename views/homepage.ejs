@@ -19,7 +19,7 @@
       <input type="file" class="form-control d-none" id="img" name="img" />
       <label
         for="img"
-        class="btn btn-secondary rounded-pill p-3 pt-2 pb-2"
+        class="btn btn-outline-secondary rounded-pill p-3 pt-2 pb-2"
         style="font-size: larger"
       >
         <i class="fa-solid fa-image"></i>
@@ -81,7 +81,7 @@
               <h4 class="text-secondary">${post.time}</h4>
             </div>
         </article>
-        <h3>${post.title.replace(/<[^>]+>/g, "")}</h3>
+        <h3 class="h4 mt-2">${post.title.replace(/<[^>]+>/g, "")}</h3>
         ${post.img ? `<!--img src="${post.img}" /-->` : ""}
       </a>
       ${
@@ -96,7 +96,10 @@
                 <h5 class="text-secondary">${post.reQuote.time}</h5>
               </div>
             </article>
-            <h3>${post.reQuote.title.replace(/<[^>]+>/g, "")}</h3>
+            <h3 class="h4 mt-2">${post.reQuote.title.replace(
+              /<[^>]+>/g,
+              ""
+            )}</h3>
             ${post.reQuote.img ? `<img src="${post.reQuote.img}" />` : ""}
           </a>
         </div>
@@ -104,17 +107,17 @@
           : ""
       }
       <div class="d-flex">
-        <button class="btn btn-danger rounded-pill" onclick="sendLikeRequest('${escapeHTMLAttribute(
+        <button class="btn btn-outline-danger rounded-pill" onclick="sendLikeRequest('${escapeHTMLAttribute(
           JSON.stringify(post)
         )}', this)">
         <i class="fa-solid fa-heart"></i> ${post.like.total}
         </button>
         <a href="/?id=${
           post.id
-        }" class="btn btn-secondary rounded-pill text-black ms-2">
+        }" class="btn btn-outline-secondary rounded-pill text-black ms-2">
             <i class="fa-solid fa-comment"></i> Reply
         </a>
-        <button class="btn btn-success rounded-pill ms-2" onclick="sendPostRequest(undefined, undefined, undefined, '${
+        <button class="btn btn-outline-success rounded-pill ms-2" onclick="sendPostRequest(undefined, undefined, undefined, '${
           post.id
         }', ${JSON.stringify(post)
         .replace(/</g, "\\u003c")
