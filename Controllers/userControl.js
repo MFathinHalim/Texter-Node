@@ -1,18 +1,15 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const bcrypt = require("bcryptjs");
-
-import type { Model } from "mongoose";
-import { userModel } from "../models/user";
-
-import type { Document } from "mongoose";
+const { userModel } = require("../models/user");
 
 dotenv.config();
-class Users {
-  static instances: Users;
 
-  #users: Model<userType>;
-  #error: userType[];
+class Users {
+  static instances;
+
+  #users;
+  #error;
 
   constructor() {
     this.#users = userModel;
@@ -43,29 +40,24 @@ class Users {
           timeBefore: "",
         },
       },
-    ]; //list kemungkinan error
+    ]; // list kemungkinan error
   }
 
   static getInstances() {
-    if (!Users.instances) Users.instances = new Users(); //Untuk ngestart class
+    if (!Users.instances) Users.instances = new Users(); // Untuk ngestart class
     return Users.instances;
   }
 
-  async signUp(
-    name: string,
-    username: string,
-    password: string,
-    desc: string
-  ): Promise<userType> {
+  async signUp(name, username, password, desc) {
     password = await bcrypt.hash(btoa(password), 10);
-    //untuk signup
+    // untuk signup
     const isNameTaken = await this.#users.findOne({
       $or: [{ username: username }],
     });
     if (isNameTaken) return this.#error[0];
     const time = new Date().toLocaleDateString();
 
-    const newUser: userType = {
+    const newUser = {
       id:
         "txtr-usr" +
         username +
@@ -82,13 +74,13 @@ class Users {
       following: [],
     };
 
-    this.#users.create(newUser); //di push
+    this.#users.create(newUser); // di push
 
-    return newUser; //di return
+    return newUser; // di return
   }
 
-  async login(username: string, password: string): Promise<userType | {}> {
-    //Login
+  async login(username, password) {
+    // Login
     try {
       const user = await this.#users.findOne({ username, ban: false });
       if (!user) {
@@ -112,11 +104,11 @@ class Users {
     }
   }
 
-  async createAccessToken(id: string): Promise<string> {
+  async createAccessToken(id) {
     try {
       const user = await this.#users.findOne({ id });
       if (!user) return "";
-      const newToken: string = jwt.sign(
+      const newToken = jwt.sign(
         user.toObject(),
         process.env.JWT_SECRET_KEY || ""
       );
@@ -127,24 +119,18 @@ class Users {
     }
   }
 
-  checkAccessToken(token: string): boolean {
-    let jwtSecretKey: string = process.env.JWT_SECRET_KEY || "";
+  checkAccessToken(token) {
+    let jwtSecretKey = process.env.JWT_SECRET_KEY || "";
     const verified = jwt.verify(token, jwtSecretKey);
     if (!verified) return false; // User not found
     return true; // True if token is still within 15 minutes
   }
 
-  async follow(
-    username: string,
-    myusername: string
-  ): Promise<userType | number> {
-    const user: (Document<userType, any, any> & userType) | null =
-      await this.#users.findOne({ username });
-    const mine: (Document<userType, any, any> & userType) | null =
-      await this.#users.findOne({ username: myusername });
+  async follow(username, myusername) {
+    const user = await this.#users.findOne({ username });
+    const mine = await this.#users.findOne({ username: myusername });
 
     if (user && mine) {
-      // @ts-ignore: Unreachable code error
       const isFollowing = mine.following?.some((f) => f.equals(user._id));
       if (isFollowing) {
         await this.#users.findByIdAndUpdate(
@@ -177,16 +163,12 @@ class Users {
     }
   }
 
-  async checkFollow(username: string, myusername: string): Promise<boolean> {
-    const user: (Document<userType, any, any> & userType) | null =
-      await this.#users.findOne({ username });
-    const mine: (Document<userType, any, any> & userType) | null =
-      await this.#users.findOne({ username: myusername });
+  async checkFollow(username, myusername) {
+    const user = await this.#users.findOne({ username });
+    const mine = await this.#users.findOne({ username: myusername });
 
     if (user && mine) {
-      // @ts-ignore: Unreachable code error
       const isFollowing = mine.following?.some((f) => f.equals(user._id));
-      // @ts-ignore: Unreachable code error
       if (isFollowing) return true;
       return false;
     } else {
@@ -194,16 +176,14 @@ class Users {
       return false; // Or throw an error or log a message
     }
   }
-  async checkUserDetails(username: string, myusername?: string) {
-    let following: boolean = false;
-    const user: (Document<userType, any, any> & userType) | null =
-      await this.#users.findOne({ username: username });
+
+  async checkUserDetails(username, myusername) {
+    let following = false;
+    const user = await this.#users.findOne({ username: username });
     if (myusername) {
-      const mine: (Document<userType, any, any> & userType) | null =
-        await this.#users.findOne({ username: myusername });
+      const mine = await this.#users.findOne({ username: myusername });
       if (user && mine && user.followers && mine.following) {
         const isFollowing = mine.following.some(
-          // @ts-ignore: Unreachable code error
           (f) => f.username === user.username
         );
         if (isFollowing) following = true;
@@ -224,11 +204,8 @@ class Users {
     };
   }
 
-  async checkUserId(
-    userId: string
-  ): Promise<(Document<userType, any, any> & userType) | userType> {
-    const user: (Document<userType, any, any> & userType) | null =
-      await this.#users.findOne({ id: userId });
+  async checkUserId(userId) {
+    const user = await this.#users.findOne({ id: userId });
     if (user) {
       return user;
     } else {
@@ -236,19 +213,16 @@ class Users {
     }
   }
 
-  async checkIsUserBan(username: string): Promise<boolean> {
-    const user: (Document<userType, any, any> & userType) | null =
-      await this.#users.findOne({ username: username });
+  async checkIsUserBan(username) {
+    const user = await this.#users.findOne({ username: username });
     if (user && user.ban !== true) {
       return false;
     } else {
       return true;
     }
   }
-  async editProfile(
-    userData: any,
-    profilePicture: string
-  ): Promise<userType | {}> {
+
+  async editProfile(userData, profilePicture) {
     try {
       const user = await this.#users.findOne({ id: userData.id });
       if (!user) {
@@ -273,4 +247,4 @@ class Users {
   }
 }
 
-export default Users;
+module.exports = Users;

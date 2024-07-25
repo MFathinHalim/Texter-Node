@@ -1,13 +1,16 @@
 {
-  "name": "medsos",
-  "module": "index.ts",
-  "type": "module",
-  "devDependencies": {
-    "@types/bun": "latest"
+  "name": "texter-node",
+  "version": "1.0.0",
+  "description": "Media Sosial Berbasis Text",
+  "main": "index.js",
+  "scripts": {
+    "start": " node index.js"
   },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
+  "keywords": [
+    "Texter"
+  ],
+  "author": "M.Fathin Halim",
+  "license": "ISC",
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^4.17.21",
@@ -25,6 +28,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.3",
     "multer": "^1.4.5-lts.1",
+    "typescript": "^5.5.4",
     "uuid": "^9.0.1"
   }
 }

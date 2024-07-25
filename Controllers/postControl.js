@@ -1,17 +1,16 @@
-import { type Model, type Document, Types } from "mongoose";
-import mainModel from "../models/post";
+const { mainModel } = require("../models/post");
 const { htmlToText } = require("html-to-text");
-import * as dotenv from "dotenv";
+const dotenv = require("dotenv");
 
 dotenv.config();
 
 //? Kelas untuk postingan
 class Posts {
-  static instance: Posts; //Instance
+  static instance; //Instance
 
   //TODO Siapin variabel yang kita perlukan
-  #posts: Model<postType>;
-  #notFound: postType;
+  #posts;
+  #notFound;
 
   //* Constructor, semacam __init__ di python :3
   constructor() {
@@ -42,20 +41,13 @@ class Posts {
   }
 
   //Dapatin instancenya, alias cek udah ada atau belum :D
-  static getInstances(): Posts {
+  static getInstances() {
     if (!Posts.instance) Posts.instance = new Posts(); //? Bikin kelasnya
     return Posts.instance; //return instancenya (alias kelasnya)
   }
 
   //Fungsi untuk mendapatkan data
-  async getData(
-    id: string,
-    page: number,
-    limit: number,
-    userId?: string
-  ): Promise<
-    { posts: postType[] } | { post: postType | null; replies?: postType[] }
-  > {
+  async getData(id, page, limit, userId) {
     if (!id && userId === undefined) {
       try {
         const totalPosts = await this.#posts.countDocuments(); // Get total number of posts
@@ -94,7 +86,7 @@ class Posts {
         return { posts: [] };
       }
 
-      function shuffleArray(array: any) {
+      function shuffleArray(array) {
         let currentIndex = array.length,
           temporaryValue,
           randomIndex;
@@ -155,11 +147,10 @@ class Posts {
     }
   }
 
-  async posting(post: postType, user: any, file: string): Promise<postType> {
+  async posting(post, user, file) {
     if (!post.title || post.title === "") return this.#notFound;
     if (post.repost) {
-      const og: (Document<postType, any, any> & postType) | null =
-        await this.#posts.findOne({ post });
+      const og = await this.#posts.findOne({ post });
       post.ogId = og?.id;
     }
     post.user = user._id;
@@ -169,16 +160,15 @@ class Posts {
     return post;
   }
 
-  async liking(postId: string, user: any): Promise<postType | number> {
+  async liking(postId, user) {
     try {
-      const post: (Document<postType, any, any> & postType) | any =
-        await this.#posts
-          .findOne({ id: postId })
-          .populate("like.users", "-password")
-          .exec();
+      const post = await this.#posts
+        .findOne({ id: postId })
+        .populate("like.users", "-password")
+        .exec();
       if (post) {
-        const userAlreadyLike: userType | undefined = post.like.users.find(
-          (entry: userType) => entry.id.toString() === user.id
+        const userAlreadyLike = post.like.users.find(
+          (entry) => entry.id.toString() === user.id
         );
         if (!userAlreadyLike) {
           // User belum like, tambahkan like
@@ -188,7 +178,7 @@ class Posts {
           // User sudah like, hapus like
           post.like.total--;
           const index = post.like.users.findIndex(
-            (entry: userType) => entry.username === user.username
+            (entry) => entry.username === user.username
           );
           // Remove the user if found
           if (index > -1) {
@@ -208,4 +198,4 @@ class Posts {
     }
   }
 }
-export default Posts; //TODO Di Export supaya dipake di files lain :D
+module.exports = Posts; //TODO Di Export supaya dipake di files lain :D
