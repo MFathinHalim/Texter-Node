@@ -30,7 +30,9 @@ router
       const data = req.query.id
         ? await PostsClass.getData(req.query.id?.toString(), 0, 0)
         : {};
-      return res.render(req.query.id ? "details" : "homepage", data);
+      if (data) {
+        return res.render(req.query.id ? "details" : "homepage", data);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
       return res.status(500).send("Failed to fetch data");
@@ -130,7 +132,9 @@ router
       req.query.myname?.toString() || ""
     );
     const post = await PostsClass.getData("", 0, 0, user.user.id);
-    return res.render("user", { user: user, posts: post });
+    if (user && post) {
+      return res.render("user", { user: user, posts: post });
+    }
   });
 
 router
@@ -140,7 +144,9 @@ router
       req.params.username,
       req.query.myname?.toString() || ""
     );
-    return res.render("edit-profile", user);
+    if (user) {
+      return res.render("edit-profile", user);
+    }
   })
   .post(upload.single("image"), async (req: Request, res: Response) => {
     try {

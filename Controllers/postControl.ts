@@ -129,7 +129,6 @@ class Posts {
         })
         .exec();
       posts = posts.filter((post) => post.user.id === userId);
-      console.log(posts);
       return { posts };
     } else {
       try {
