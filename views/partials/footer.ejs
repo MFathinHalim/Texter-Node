@@ -114,7 +114,58 @@
             console.error('Error sending POST request:', error);
         });
     }
+      function previewImage(event) {
+        var input = event.target;
 
+        // Ensure that file is selected
+        if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            var preview = document.getElementById("preview");
+            preview.src = e.target.result;
+        };
+
+        reader.readAsDataURL(input.files[0]); // Read the uploaded file as a URL
+        }
+    }  
+    var inputFile = document.getElementById("img");
+    inputFile.addEventListener("change", previewImage);
+
+
+    function sendEditProfile(myForm, id) {
+        event.preventDefault(); // Prevent default form submission
+        const formData = new FormData(); 
+        const name = document.getElementById("displayName").value;
+        console.log(name)
+        const username = document.getElementById("username").innerText;
+        const desc = document.getElementById("desc").value;
+        // Append data to FormData
+        const data = {
+            id: id,
+            username: username,
+            name: name,
+            pp: "",
+            desc: desc
+        };
+
+        formData.append('data', JSON.stringify(data));
+        formData.append('token', token); // Assuming you have 'token' available
+        // Handle image upload
+        if (myForm.querySelector("#img").files[0]) {
+            formData.append('image', myForm.querySelector("#img").files[0]); 
+        } else {
+            formData.append('image', ''); // Empty string if no image selected
+        }
+
+        // Send POST request using fetch
+        fetch(`/profile/${username}`, {
+            method: 'POST',
+            body: formData,
+        }).then(() => {
+            window.location.href = "/user/details/" + username
+        })
+    }
 
     function sendLikeRequest(post, button) {
         post = JSON.parse(post)

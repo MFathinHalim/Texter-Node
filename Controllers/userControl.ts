@@ -194,21 +194,28 @@ class Users {
       return false; // Or throw an error or log a message
     }
   }
-  async checkUserDetails(username: string, myusername: string) {
+  async checkUserDetails(username: string, myusername?: string) {
     let following: boolean = false;
     const user: (Document<userType, any, any> & userType) | null =
       await this.#users.findOne({ username: username });
-    const mine: (Document<userType, any, any> & userType) | null =
-      await this.#users.findOne({ username: myusername });
-    if (user && mine && user.followers && mine.following) {
-      const isFollowing = mine.following.some(
-        // @ts-ignore: Unreachable code error
-        (f) => f.username === user.username
-      );
-      if (isFollowing) following = true;
+    if (myusername) {
+      const mine: (Document<userType, any, any> & userType) | null =
+        await this.#users.findOne({ username: myusername });
+      if (user && mine && user.followers && mine.following) {
+        const isFollowing = mine.following.some(
+          // @ts-ignore: Unreachable code error
+          (f) => f.username === user.username
+        );
+        if (isFollowing) following = true;
+        return {
+          user: user,
+          following: following,
+        };
+      }
+    }
+    if (user) {
       return {
         user: user,
-        following: following,
       };
     }
     return {
@@ -236,6 +243,32 @@ class Users {
       return false;
     } else {
       return true;
+    }
+  }
+  async editProfile(
+    userData: any,
+    profilePicture: string
+  ): Promise<userType | {}> {
+    try {
+      const user = await this.#users.findOne({ id: userData.id });
+      if (!user) {
+        return this.#error[1]; // User not found
+      }
+
+      user.name = userData.name;
+      user.pp = profilePicture !== "" ? profilePicture : user.pp;
+      user.desc = userData.desc;
+
+      await user.save();
+      return {
+        username: user.username,
+        name: user.name,
+        pp: user.pp,
+        desc: user.desc,
+      };
+    } catch (error) {
+      console.error("Error editing profile:", error);
+      return this.#error[1];
     }
   }
 }

@@ -51,11 +51,12 @@ class Posts {
   async getData(
     id: string,
     page: number,
-    limit: number
+    limit: number,
+    userId?: string
   ): Promise<
     { posts: postType[] } | { post: postType | null; replies?: postType[] }
   > {
-    if (!id) {
+    if (!id && userId === undefined) {
       try {
         const totalPosts = await this.#posts.countDocuments(); // Get total number of posts
         const skip = (page - 1) * limit;
@@ -112,6 +113,24 @@ class Posts {
 
         return array;
       }
+    } else if (userId) {
+      let posts = await this.#posts
+        .find({})
+        .populate({
+          path: "user",
+          select: "-password",
+        })
+        .populate({
+          path: "reQuote",
+          populate: {
+            path: "user",
+            select: "-password",
+          },
+        })
+        .exec();
+      posts = posts.filter((post) => post.user.id === userId);
+      console.log(posts);
+      return { posts };
     } else {
       try {
         const post = await this.#posts

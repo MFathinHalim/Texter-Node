@@ -1,11 +1,16 @@
 <%- include("partials/header.ejs") %> <% if(post) { %>
 <div class="p-3 border-light rounded-0 pb-0">
-  <div class="d-flex align-items-center">
-    <img
-      src="<%= post.user.pp %>"
-      class="rounded-circle"
-      style="max-height: 100px; border: 2px solid var(--accent1)"
-    />
+  <div class="d-flex align-items-center" id="top">
+    <a
+      href="/user/details/<%= post.user.username %>"
+      class="d-flex align-items-center"
+    >
+      <img
+        src="<%= post.user.pp %>"
+        class="rounded-circle"
+        style="max-height: 100px; border: 2px solid var(--accent1)"
+      />
+    </a>
     <div class="d-flex flex-column ms-2 me-auto">
       <!-- ms-2 untuk margin kiri 2, me-auto untuk margin kanan otomatis -->
       <h3 class="h2" style="margin-bottom: 3px"><%= post.user.name %></h3>
@@ -38,7 +43,10 @@
   </div>
 </div>
 <div class="card bg-dark text-white p-3 border-light post rounded-0">
-  <div class="d-flex align-items-center">
+  <a
+    href="/user/details/<%= post.user.username %>"
+    class="d-flex align-items-center"
+  >
     <img src="<%= post.user.pp %>" class="pfp rounded-circle" />
     <div class="d-flex flex-column ms-2 me-auto pt-2">
       <!-- ms-2 untuk margin kiri 2, me-auto untuk margin kanan otomatis -->
@@ -48,7 +56,7 @@
       </h4>
       <h4 class="text-secondary"><%= post.time %></h4>
     </div>
-  </div>
+  </a>
   <h3 class="h4 mt-2"><%= post.title %></h3>
   <% if(post.img) { %>
   <img
@@ -182,13 +190,20 @@
 <% replies.forEach((reply) => { %>
 <div class="card bg-dark text-white p-3 post rounded-0 border-light">
   <a href="/?id=<%=reply.id %>">
-    <article class="d-flex pt-2">
-      <img class="pfp rounded-circle" src="<%= reply.user.pp %>" />
-      <div class="ms-2">
-        <h4><%= reply.user.name %></h4>
+    <a
+      href="/user/details/<%= reply.user.username %>"
+      class="d-flex align-items-center"
+    >
+      <img src="<%= reply.user.pp %>" class="pfp rounded-circle" />
+      <div class="d-flex flex-column ms-2 me-auto pt-2">
+        <!-- ms-2 untuk margin kiri 2, me-auto untuk margin kanan otomatis -->
+        <h4>
+          <%= reply.user.name %> <%= reply.reQuote ? `is Requote to
+          ${reply.reQuote.user.name}` : "" %>
+        </h4>
         <h4 class="text-secondary"><%= reply.time %></h4>
       </div>
-    </article>
+    </a>
     <h3 class="h4 mt-1"><%= reply.title.replace(/<[^>]+>/g, "") %></h3>
     <% if(reply.img) { %>
     <img style="border-radius: 2% !important" src="<%= reply.img %>" />
@@ -230,5 +245,18 @@
 
   if ("<%= post.user.username %>" === username) {
     followBtn.remove();
+    // Membuat elemen <a> untuk tombol
+    let profileLink = document.createElement("a");
+
+    // Menetapkan atribut href ke URL profil dengan username
+    profileLink.setAttribute("href", "/profile/" + username);
+
+    // Menambahkan kelas Bootstrap untuk tampilan tombol
+    profileLink.classList.add("btn", "btn-outline-warning", "rounded-pill");
+    // Menambahkan teks atau konten di dalam tombol
+    profileLink.textContent = "Edit";
+
+    // Menambahkan elemen ke dalam DOM (misalnya, ke dalam div dengan id "buttonContainer")
+    document.getElementById("top").appendChild(profileLink);
   }
 </script>

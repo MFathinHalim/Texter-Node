@@ -66,7 +66,7 @@
       postElement.innerHTML = `
     <div class="card bg-dark text-white p-3 post rounded-0 border-light">
       <a href="/?id=${post.repost ? post.ogId : post.id}">
-        <article class="d-flex pt-2">
+        <a href='/user/details/${post.user.username}' class="d-flex pt-2">
         ${
           post.repost
             ? `
@@ -86,7 +86,7 @@
         }
               <h4 class="text-secondary">${post.time}</h4>
             </div>
-        </article>
+        </a>
         <h3 class="h4 mt-2">${post.title.replace(/<[^>]+>/g, "")}</h3>
         ${
           post.img

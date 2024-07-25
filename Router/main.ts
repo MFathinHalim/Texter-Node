@@ -56,12 +56,13 @@ router
         const buffer = req.file.buffer;
         const id: string = `${userData.title}-${userData.user.id}-${userData.time}`;
         // Upload image to ImageKit
+
         await imagekit.upload(
           {
             file: buffer,
             fileName: `image-${id}.jpg`,
             useUniqueFileName: false,
-            folder: "SG",
+            folder: "Txtr",
           },
           async function (error: any, result: any) {
             if (error) {
@@ -72,7 +73,6 @@ router
             }
 
             img = result.url; // Save the uploaded image URL
-            console.log(img);
 
             // Post data to PostsClass
             await PostsClass.posting(userData, user, img);
@@ -129,8 +129,70 @@ router
       req.params.username,
       req.query.myname?.toString() || ""
     );
-    return res.render("user", user);
+    const post = await PostsClass.getData("", 0, 0, user.user.id);
+    return res.render("user", { user: user, posts: post });
   });
+
+router
+  .route("/profile/:username")
+  .get(async (req: Request, res: Response) => {
+    const user = await userClass.checkUserDetails(
+      req.params.username,
+      req.query.myname?.toString() || ""
+    );
+    return res.render("edit-profile", user);
+  })
+  .post(upload.single("image"), async (req: Request, res: Response) => {
+    try {
+      const checkToken: boolean = await userClass.checkAccessToken(
+        req.body.token
+      );
+      if (!checkToken) {
+        throw new Error("Invalid token");
+      }
+
+      const userData = JSON.parse(req.body.data);
+
+      let img: string = ""; // Initialize image URL
+      //@ts-ignore: Unreachable code error
+      if (req.file) {
+        // If a file is uploaded, process it
+        //@ts-ignore: Unreachable code error
+        const buffer = req.file.buffer;
+        const id: string = userData.id;
+        // Upload image to ImageKit
+
+        await imagekit.upload(
+          {
+            file: buffer,
+            fileName: `pfp-${id}.jpg`,
+            useUniqueFileName: false,
+            folder: "Txtr",
+          },
+          async function (error: any, result: any) {
+            if (error) {
+              console.error("Error uploading to ImageKit:", error);
+              return res
+                .status(500)
+                .json({ msg: "Terjadi kesalahan saat mengunggah file" });
+            }
+            const currentEpochTime = Date.now();
+            const updatedAt = `updatedAt=${currentEpochTime}`;
+            img = result.url + `?updatedAt=${updatedAt}`; // Save the uploaded image URL
+            await userClass.editProfile(userData, img);
+            return res.send(200);
+          }
+        );
+      }
+      // Post data to PostsClass
+      await userClass.editProfile(userData, img);
+      return res.send(200);
+    } catch (error) {
+      console.error("Error posting data:", error);
+      return res.status(500).send("Failed to post data");
+    }
+  });
+
 router
   .route("/user/details/json/:username")
   .get(async (req: Request, res: Response) => {
